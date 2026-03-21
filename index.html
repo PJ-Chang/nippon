@@ -31,15 +31,15 @@
             left: 20px; top: 20px; 
             background-color: var(--brand-primary);
             color: white; border: none;
-            border-radius: 50%;
             width: 45px; height: 45px;
+            border-radius: 50%;
             cursor: pointer; font-size: 18px;
             z-index: 1000;
             box-shadow: 0 4px 10px rgba(0,0,0,0.15);
             display: flex; align-items: center; justify-content: center;
         }
 
-        .page-layout { display: flex; width: 100%; max-width: 1200px; justify-content: center; }
+        .page-layout { display: flex; width: 100%; max-width: 1200px; align-items: flex-start; justify-content: center; }
 
         .sidebar-spacer {
             width: 0;
@@ -55,43 +55,37 @@
             width: 0; padding: 0; opacity: 0;
             overflow: hidden;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: fixed; 
-            left: 20px; top: 20px;
-            z-index: 999;
+            position: fixed; left: 20px; top: 20px; z-index: 999;
             display: flex; flex-direction: column;
         }
         .sidebar.open { width: 330px; padding: 25px; opacity: 1; max-height: calc(100vh - 40px); }
 
         .sidebar-header {
             display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 2px dashed #E0E0E0;
-            padding-bottom: 15px; margin-bottom: 15px;
+            border-bottom: 2px dashed #E0E0E0; padding-bottom: 20px; margin-bottom: 20px;
         }
 
-        .saved-list-container { flex: 1; overflow-y: auto; }
-        
         .saved-item {
             background: #ffffff; border: 1px solid #E0E0E0;
-            border-radius: 8px; margin-bottom: 12px;
-            position: relative; padding: 12px;
+            border-radius: 8px; margin-bottom: 12px; position: relative; padding: 12px;
         }
 
-        .editable-text { outline: none; border-radius: 4px; padding: 2px 4px; }
-        .editable-text:hover { background-color: #fff0f0; }
-
+        .editable-text:hover { background-color: #fff0f0; border-radius: 4px; }
+        
         .main-container { display: flex; gap: 25px; width: 100%; max-width: 900px; flex-wrap: wrap; justify-content: center; }
-        .calculator, .result { background: #ffffff; padding: 30px; border-radius: 12px; box-shadow: var(--box-shadow); flex: 1; min-width: 320px; box-sizing: border-box; }
+        .calculator, .result { background: #ffffff; padding: 35px; border-radius: 12px; box-shadow: var(--box-shadow); flex: 1; min-width: 320px; box-sizing: border-box; }
         .result { border: 2px solid var(--brand-primary); }
-        .result.waiting { opacity: 0.5; filter: grayscale(1); }
+        .result.waiting { opacity: 0.4; filter: grayscale(1); }
 
-        .input-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: 600; }
-        input { width: 100%; padding: 10px; border: 1px solid #E0E0E0; border-radius: 6px; box-sizing: border-box; }
+        .input-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14.5px; }
+        input[type="text"], input[type="number"], select { width: 100%; padding: 12px; border: 1px solid #E0E0E0; border-radius: 6px; font-size: 16px; box-sizing: border-box; }
         
         .primary-btn { width: 100%; padding: 15px; background: var(--brand-primary); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
         .save-btn { width: 100%; padding: 12px; background: var(--brand-text); color: white; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; }
         
-        .del-btn { position: absolute; right: 8px; top: 8px; cursor: pointer; color: var(--brand-primary); font-size: 14px; }
+        .del-btn { position: absolute; right: 8px; top: 8px; cursor: pointer; color: var(--brand-primary); font-size: 12px; }
+        .total-price { font-size: 24px; font-weight: bold; color: var(--brand-primary); }
     </style>
 </head>
 <body>
@@ -101,8 +95,8 @@
     <div class="page-layout">
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <h3 style="margin:0; font-size:16px;">Nippon Select 歷史紀錄</h3>
-                <span style="cursor:pointer" onclick="toggleSidebar()">✖</span>
+                <h3 style="margin:0">Nippon Select 日本代購</h3>
+                <span style="cursor:pointer; color:var(--brand-accent)" onclick="toggleSidebar()">✖</span>
             </div>
             <div class="saved-list-container" id="savedList"></div>
         </div>
@@ -111,46 +105,55 @@
 
         <div class="main-container">
             <div class="calculator">
-                <h2>代購計算機</h2>
+                <h2>Nippon Select 日本代購</h2>
                 <div class="input-group">
-                    <label>商品原價 (JPY ¥)</label>
-                    <input type="number" id="price" placeholder="輸入日幣金額">
+                    <label>1. 商品原價 (JPY ¥)</label>
+                    <input type="number" id="price" placeholder="輸入日幣原價">
                 </div>
+
                 <div class="input-group">
-                    <label>利潤 (%)</label>
-                    <input type="number" id="serviceFee" value="10">
+                    <label>2. 利潤設定</label>
+                    <div style="display:flex; gap:15px; margin-bottom:10px;">
+                        <label style="font-weight:normal"><input type="radio" name="feeType" value="percent" checked> 按比例 (%)</label>
+                        <label style="font-weight:normal"><input type="radio" name="feeType" value="fixed"> 固定台幣</label>
+                    </div>
+                    <input type="number" id="serviceFee" placeholder="輸入比例或金額">
                 </div>
+
                 <div class="input-group">
-                    <label>商品重量 (g)</label>
+                    <label>3. 商品重量 (g)</label>
                     <input type="number" id="weight" placeholder="克重" oninput="calculateWeightFee()">
-                    <small id="weightFeeDisplay" style="color:var(--brand-primary)">= 0 元</small>
+                    <span id="weightFeeDisplay" style="color:var(--brand-primary); font-weight:bold;">= 0 元</span>
                 </div>
+
+                <div class="input-group">
+                    <label>4. 台灣運費 (台幣)</label>
+                    <input type="number" id="localShipping" value="60">
+                </div>
+
                 <button class="primary-btn" onclick="calculateTotal()">立即計算總價</button>
             </div>
 
             <div class="result waiting" id="resultBox">
-                <h3>📝 報價結果</h3>
-                <p style="display:flex; justify-content:space-between"><span>預估運費：</span> <span id="resIntlShipping">0 元</span></p>
-                <p style="display:flex; justify-content:space-between; font-weight:bold; color:var(--brand-primary); font-size:22px;">
-                    <span>總賣價：</span> <span id="resTotal">0 元</span>
-                </p>
-                <div style="margin-top:20px;">
-                    <input type="text" id="quoteName" placeholder="輸入商品名稱">
-                    <button class="save-btn" onclick="saveToSidebar()">💾 直接儲存 (不詢問)</button>
+                <h3>📝 報價明細 (台幣)</h3>
+                <p style="display:flex; justify-content:space-between"><span>商品折合：</span> <span id="resItemPrice">0 元</span></p>
+                <p style="display:flex; justify-content:space-between"><span>國際運費：</span> <span id="resIntlShipping">0 元</span></p>
+                <hr style="border:0; border-top:1px dashed #eee">
+                <p class="total-price" style="display:flex; justify-content:space-between"><span>賣價：</span> <span id="resTotal">0 元</span></p>
+                
+                <div style="margin-top:25px; border-top:2px dashed #eee; padding-top:20px;">
+                    <input type="text" id="quoteName" placeholder="儲存報價名稱">
+                    <button class="save-btn" onclick="saveToSidebar()">💾 直接儲存至歷史紀錄</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // 初始化載入
         window.onload = () => {
             loadFromStorage();
-            // 關鍵：記憶側邊欄狀態
-            const isSidebarOpen = localStorage.getItem('sidebarOpen') === 'true';
-            if (isSidebarOpen) {
-                toggleSidebar(true);
-            }
+            // 恢復側邊欄記憶狀態
+            if (localStorage.getItem('sidebarOpen') === 'true') toggleSidebar(true);
         };
 
         function calculateWeightFee() {
@@ -160,14 +163,17 @@
 
         function calculateTotal() {
             const price = parseFloat(document.getElementById('price').value) || 0;
-            const feePercent = parseFloat(document.getElementById('serviceFee').value) || 0;
+            const feeType = document.querySelector('input[name="feeType"]:checked').value;
+            const serviceFeeInput = parseFloat(document.getElementById('serviceFee').value) || 0;
             const weight = parseFloat(document.getElementById('weight').value) || 0;
+            const local = parseFloat(document.getElementById('localShipping').value) || 0;
 
             const itemTWD = Math.round(price * 0.21);
             const intlTWD = Math.round(weight * 0.25);
-            const profit = Math.round(itemTWD * (feePercent / 100));
-            const total = itemTWD + intlTWD + profit + 60; // 預設含60運費
+            const serviceTWD = (feeType === 'percent') ? Math.round(itemTWD * (serviceFeeInput / 100)) : serviceFeeInput;
+            const total = itemTWD + intlTWD + local + serviceTWD;
 
+            document.getElementById('resItemPrice').innerText = itemTWD + ' 元';
             document.getElementById('resIntlShipping').innerText = intlTWD + ' 元';
             document.getElementById('resTotal').innerText = total + ' 元';
             document.getElementById('resultBox').classList.remove('waiting');
@@ -177,49 +183,41 @@
             const sidebar = document.getElementById('sidebar');
             const spacer = document.getElementById('sidebarSpacer');
             const btn = document.getElementById('historyBtn');
-            
-            // 如果是強制開啟（初始化時），或是正常的切換
             const isOpen = forceOpen ? true : sidebar.classList.toggle('open');
-            if (forceOpen) sidebar.classList.add('open');
             
+            if (forceOpen) sidebar.classList.add('open');
             spacer.classList.toggle('open', isOpen);
             btn.style.display = isOpen ? 'none' : 'flex';
-            
-            // 存入 localStorage
             localStorage.setItem('sidebarOpen', isOpen);
         }
 
         function saveToSidebar() {
             const name = document.getElementById('quoteName').value.trim() || "未命名商品";
             const total = document.getElementById('resTotal').innerText;
-            if (total === '0 元') return;
+            if (total === '0 元') return; // 防呆：沒計算不儲存
 
             const id = 'ID_' + Date.now();
-            renderItem(id, name, total);
+            renderSavedItem(id, `🔴 ${name}`, total);
             saveData();
-            
             document.getElementById('quoteName').value = '';
-            // 儲存後自動開啟側邊欄（如果不小心關掉了）
-            if (!document.getElementById('sidebar').classList.contains('open')) {
-                toggleSidebar();
-            }
+            if (!document.getElementById('sidebar').classList.contains('open')) toggleSidebar();
         }
 
-        function renderItem(id, name, total) {
-            const container = document.getElementById('savedList');
-            const div = document.createElement('div');
-            div.className = 'saved-item';
-            div.id = id;
-            div.innerHTML = `
+        function renderSavedItem(id, name, total) {
+            const list = document.getElementById('savedList');
+            const item = document.createElement('div');
+            item.className = 'saved-item';
+            item.id = id;
+            item.innerHTML = `
                 <span class="del-btn" onclick="deleteItem('${id}')">✖</span>
-                <div class="editable-text" contenteditable="true" onblur="saveData()" style="font-weight:bold">${name}</div>
-                <div style="color:var(--brand-primary); font-weight:bold; margin-top:4px;">${total}</div>
+                <div class="editable-text" contenteditable="true" onblur="saveData()" style="font-weight:bold; outline:none">${name}</div>
+                <div style="color:var(--brand-primary); font-weight:bold; margin-top:5px;">賣價：${total}</div>
             `;
-            container.prepend(div);
+            list.prepend(item);
         }
 
         function deleteItem(id) {
-            // 移除確認視窗，直接刪除
+            // 直接刪除，不跳確認
             const el = document.getElementById(id);
             if (el) el.remove();
             saveData();
@@ -231,7 +229,7 @@
                 items.push({
                     id: el.id,
                     name: el.querySelector('.editable-text').innerText,
-                    total: el.querySelector('div[style*="color:var(--brand-primary)"]').innerText
+                    total: el.querySelector('div[style*="color:var(--brand-primary)"]').innerText.replace('賣價：','')
                 });
             });
             localStorage.setItem('nipponSelectQuotes', JSON.stringify(items));
@@ -239,8 +237,13 @@
 
         function loadFromStorage() {
             const data = JSON.parse(localStorage.getItem('nipponSelectQuotes') || '[]');
-            data.reverse().forEach(q => renderItem(q.id, q.name, q.total));
+            data.reverse().forEach(q => renderSavedItem(q.id, q.name, q.total));
         }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && e.target.id === 'quoteName') saveToSidebar();
+            else if (e.key === 'Enter' && e.target.tagName !== 'DIV') calculateTotal();
+        });
     </script>
 </body>
 </html>
