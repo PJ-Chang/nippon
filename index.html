@@ -5,17 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nippon Select - 日本代購計算</title>
     <style>
+        /* 🎨 品牌顏色設定區 (Nippon Select - 日本風) */
         :root {
-            --brand-primary: #cc0000;
-            --brand-primary-hover: #a00000;
-            --brand-bg: #fffafa;
-            --brand-text: #2c2c2c;
-            --brand-accent: #f06292;
-            --box-shadow: 0 5px 15px rgba(204, 0, 0, 0.08);
+            --brand-primary: #cc0000;   /* 精選日系紅 */
+            --brand-primary-hover: #a00000; /* 深日系紅 */
+            --brand-bg: #fffafa;        /* 很淡的櫻花粉白 */
+            --brand-text: #2c2c2c;      /* 深灰色，比黑色柔和 */
+            --brand-accent: #f06292;    /* 櫻花粉紅 */
+            --box-shadow: 0 5px 15px rgba(204, 0, 0, 0.08); /* 更柔和的紅色陰影 */
         }
 
         body { 
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; /* 更簡約的字體 stack */
             background-color: var(--brand-bg); 
             display: flex; 
             justify-content: center; 
@@ -26,66 +27,381 @@
             overflow-x: hidden;
         }
 
+        /* 👇 歷史紀錄按鈕：固定在左上角 20px 👇 */
         .toggle-sidebar-btn {
             position: fixed;
-            left: 20px; top: 20px; 
-            background-color: var(--brand-primary);
-            color: white; border: none;
-            width: 45px; height: 45px;
-            border-radius: 50%;
-            cursor: pointer; font-size: 18px;
+            left: 20px;
+            top: 20px; 
+            background-color: var(--brand-primary); /* 按鈕改為紅色 */
+            color: white;
+            border: none;
+            padding: 12px 20px; 
+            border-radius: 50%; /* 改為圓形按鈕更有日系感 */
+            width: 45px;
+            height: 45px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
             z-index: 1000;
             box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-            display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .toggle-sidebar-btn:hover {
+            background-color: var(--brand-primary-hover);
+            transform: translateY(-2px);
         }
 
-        .page-layout { display: flex; width: 100%; max-width: 1200px; align-items: flex-start; justify-content: center; }
+        /* 超級外框 */
+        .page-layout {
+            display: flex;
+            width: 100%;
+            max-width: 1200px;
+            align-items: flex-start;
+            justify-content: center;
+            margin-top: 0; 
+        }
 
+        /* 隱形的推擠空間，使用絲滑貝茲曲線 */
         .sidebar-spacer {
             width: 0;
             transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             flex-shrink: 0;
         }
-        .sidebar-spacer.open { width: 350px; }
+        .sidebar-spacer.open {
+            width: 350px; 
+        }
+        @media (max-width: 900px) {
+            .sidebar-spacer.open { width: 0; } 
+        }
 
+        /* 👇 左側收合選單：完美貼齊 left: 20px, top: 20px 👇 */
         .sidebar {
             background: #ffffff;
-            border-radius: 12px;
+            border-radius: 12px; /* 稍微圓潤一點，但維持簡約 */
             box-shadow: var(--box-shadow);
-            width: 0; padding: 0; opacity: 0;
+            width: 0; 
+            padding: 0;
+            opacity: 0;
             overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: fixed; left: 20px; top: 20px; z-index: 999;
-            display: flex; flex-direction: column;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); /* 絲滑展開動畫 */
+            box-sizing: border-box;
+            white-space: nowrap; 
+            display: flex;
+            flex-direction: column;
+            
+            position: fixed; 
+            left: 20px;      
+            top: 20px;       
+            z-index: 999;
         }
-        .sidebar.open { width: 330px; padding: 25px; opacity: 1; max-height: calc(100vh - 40px); }
+        .sidebar.open {
+            width: 330px; 
+            padding: 25px; 
+            opacity: 1;
+            max-height: calc(100vh - 40px); 
+            white-space: normal;
+        }
 
+        /* 👇 標題：保留視覺比例，但調整顏色 👇 */
         .sidebar-header {
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 2px dashed #E0E0E0; padding-bottom: 20px; margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px dashed #E0E0E0; /* 更淺的虛線 */
+            padding-bottom: 25px; 
+            margin-bottom: 25px;
+            flex-shrink: 0;
         }
-
-        .saved-item {
-            background: #ffffff; border: 1px solid #E0E0E0;
-            border-radius: 8px; margin-bottom: 12px; position: relative; padding: 12px;
+        .sidebar-header h3 { 
+            margin: 0; 
+            font-size: 18px; 
+            line-height: 1.2;
+            color: var(--brand-text); /* 標題改為深灰，強調文字 */
+            font-weight: bold;
         }
-
-        .editable-text:hover { background-color: #fff0f0; border-radius: 4px; }
+        .sidebar-header h3::before { /* 增加一個紅點綴飾 */
+            content: "🔴 ";
+            font-size: 12px;
+            vertical-align: middle;
+        }
+        .close-btn {
+            cursor: pointer;
+            color: var(--brand-accent); /* ✖ 改為櫻花粉 */
+            font-weight: bold;
+            font-size: 20px;
+            transition: color 0.2s;
+        }
+        .close-btn:hover { color: var(--brand-primary); }
         
-        .main-container { display: flex; gap: 25px; width: 100%; max-width: 900px; flex-wrap: wrap; justify-content: center; }
-        .calculator, .result { background: #ffffff; padding: 35px; border-radius: 12px; box-shadow: var(--box-shadow); flex: 1; min-width: 320px; box-sizing: border-box; }
-        .result { border: 2px solid var(--brand-primary); }
-        .result.waiting { opacity: 0.4; filter: grayscale(1); }
+        /* 儲存的清單容器 */
+        .saved-list-container {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 5px; 
+        }
+        
+        /* 每一筆儲存的報價卡片 */
+        .saved-item {
+            background: #ffffff;
+            border: 1px solid #E0E0E0;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .saved-item-inner {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 12px;
+            width: 100%;
+            box-sizing: border-box;
+            transform-origin: center;
+        }
+        
+        /* 正在被拖拉的那張卡片 */
+        .saved-item.dragging {
+            opacity: 0.6;
+            background-color: #fff8f8; /* 拖曳時淡淡的粉 */
+            border: 1px dashed var(--brand-primary);
+            z-index: 100;
+        }
+        
+        .drag-handle {
+            cursor: grab;
+            color: #C0C0C0; /* 更淡的灰色 */
+            font-size: 18px;
+            padding-top: 2px;
+            user-select: none;
+            transition: color 0.2s;
+        }
+        .drag-handle:hover { color: var(--brand-primary); }
+        .drag-handle:active { cursor: grabbing; }
+
+        .item-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            position: relative;
+        }
+        .saved-item .del-btn {
+            position: absolute;
+            right: 0px;
+            top: 0px;
+            cursor: pointer;
+            color: var(--brand-primary); /* ✖ 改為日本紅 */
+            font-size: 12px;
+            z-index: 10;
+        }
+
+        /* 直接編輯文字效果 CSS */
+        .editable-text {
+            padding: 2px 4px;
+            margin: -2px -4px;
+            border-radius: 4px;
+            transition: background 0.2s;
+            outline: none;
+            cursor: text;
+        }
+        .editable-text:hover, .editable-text:focus {
+            background-color: #fff0f0; /* hover 時淡粉色 */
+            border-bottom: 1px dashed var(--brand-primary);
+        }
+        .editable-text:hover::after {
+            content: " ✎";
+            font-size: 12px;
+            color: var(--brand-primary);
+            position: absolute;
+        }
+        .editable-text:focus::after {
+            display: none;
+        }
+        
+        /* 主要計算機外框 */
+        .main-container {
+            display: flex;
+            gap: 25px;
+            width: 100%;
+            max-width: 900px; 
+            flex-wrap: wrap; 
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .calculator, .result { 
+            background: #ffffff; 
+            padding: 35px; 
+            border-radius: 12px; /* 簡約圓角 */
+            box-shadow: var(--box-shadow); 
+            flex: 1; 
+            min-width: 320px; 
+            box-sizing: border-box;
+        }
+
+        h2, h3 { 
+            text-align: center; 
+            margin-top: 0;
+            color: var(--brand-text); /* 改為深灰色 */
+            letter-spacing: 1px;
+        }
+        h2::before, h3::before { /* 增加日系綴飾 */
+            content: "▫️ ";
+            font-size: 14px;
+            color: var(--brand-primary);
+            vertical-align: middle;
+        }
 
         .input-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14.5px; }
-        input[type="text"], input[type="number"], select { width: 100%; padding: 12px; border: 1px solid #E0E0E0; border-radius: 6px; font-size: 16px; box-sizing: border-box; }
         
-        .primary-btn { width: 100%; padding: 15px; background: var(--brand-primary); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
-        .save-btn { width: 100%; padding: 12px; background: var(--brand-text); color: white; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; }
+        label { 
+            display: block; 
+            margin-bottom: 8px; 
+            font-weight: 600; 
+            font-size: 14.5px;
+            color: var(--brand-text);
+        }
+
+        input[type="text"], input[type="number"], select { 
+            width: 100%; 
+            padding: 12px; 
+            border: 1px solid #E0E0E0; 
+            border-radius: 6px; /* 簡約圓角 */
+            box-sizing: border-box; 
+            font-size: 16px;
+            color: var(--brand-text);
+            background-color: #ffffff;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--brand-primary);
+            box-shadow: 0 0 0 3px rgba(204, 0, 0, 0.1); /* 紅色 focus 陰影 */
+        }
+
+        .radio-group { 
+            display: flex; 
+            gap: 15px; 
+            margin-bottom: 12px; 
+            font-size: 14.5px;
+        }
+
+        .radio-group label {
+            font-weight: normal;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        input[type="radio"] {
+            accent-color: var(--brand-primary);
+        }
+
+        .hint {
+            font-size: 12px;
+            color: #A0A0A0; /* 更淡的灰色 */
+            margin-top: 6px;
+            display: block;
+        }
+
+        button.primary-btn { 
+            width: 100%; 
+            padding: 15px; 
+            background-color: var(--brand-primary); 
+            color: white; 
+            border: none; 
+            border-radius: 6px; 
+            font-size: 16px; 
+            font-weight: bold;
+            letter-spacing: 1px;
+            cursor: pointer; 
+            transition: background 0.3s, transform 0.1s; 
+            margin-top: 15px;
+        }
+        button.primary-btn:hover { background-color: var(--brand-primary-hover); }
+        button.primary-btn:active { transform: scale(0.98); }
         
-        .del-btn { position: absolute; right: 8px; top: 8px; cursor: pointer; color: var(--brand-primary); font-size: 12px; }
-        .total-price { font-size: 24px; font-weight: bold; color: var(--brand-primary); }
+        .result { 
+            display: flex; 
+            flex-direction: column;
+            border: 2px solid var(--brand-primary); /* 紅色外框突顯結果 */
+            position: relative;
+        }
+        .result.waiting {
+            opacity: 0.4;
+            border-color: #E0E0E0;
+            filter: grayscale(1); /* 灰色狀態 */
+        }
+
+        @keyframes refreshEffect {
+            0% { opacity: 0.3; transform: scale(0.98); background-color: #fff0f0; }
+            100% { opacity: 1; transform: scale(1); background-color: #ffffff; }
+        }
+        .play-refresh {
+            animation: refreshEffect 0.5s ease-out;
+        }
+
+        .result p { 
+            margin: 16px 0; 
+            display: flex;
+            justify-content: space-between;
+            font-size: 16px;
+        }
+        .result hr {
+            border: 0;
+            border-top: 1px dashed #E0E0E0; 
+            margin: 20px 0;
+            width: 100%;
+        }
+        .cost-price {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--brand-text); 
+        }
+        .total-price {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--brand-primary) !important; /* 賣價改為日本紅 */
+        }
+        .weight-display-container {
+            display: flex; 
+            align-items: center; 
+            gap: 12px;
+        }
+        .weight-fee {
+            color: var(--brand-primary); /* 紅色 */
+            font-weight: bold; 
+            white-space: nowrap; 
+            font-size: 16px;
+        }
+
+        .save-section {
+            margin-top: auto; 
+            padding-top: 25px;
+            border-top: 2px dashed #E0E0E0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .save-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--brand-text); /* 保留深灰 */
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .save-btn:hover { background-color: #1a1a1a; }
     </style>
 </head>
 <body>
@@ -93,11 +409,17 @@
     <button class="toggle-sidebar-btn" id="historyBtn" onclick="toggleSidebar()">☰</button>
 
     <div class="page-layout">
+        
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <h3 style="margin:0">Nippon Select 日本代購</h3>
-                <span style="cursor:pointer; color:var(--brand-accent)" onclick="toggleSidebar()">✖</span>
+                <h3>Nippon Select 日本代購</h3>
+                <span class="close-btn" onclick="toggleSidebar()">✖</span>
             </div>
+            
+            <p id="emptyMsg" style="color: #A0A0A0; font-size: 14px; text-align: center; margin-top: 30px;">
+                目前尚無紀錄<br>在右側輸入名稱即可儲存。
+            </p>
+            
             <div class="saved-list-container" id="savedList"></div>
         </div>
 
@@ -106,59 +428,76 @@
         <div class="main-container">
             <div class="calculator">
                 <h2>Nippon Select 日本代購</h2>
+
                 <div class="input-group">
-                    <label>1. 商品原價 (JPY ¥)</label>
+                    <label for="currency">1. 選擇商品幣別</label>
+                    <select id="currency">
+                        <option value="JPY">日幣 ¥ : 日幣原價 × 0.21</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label id="priceLabel" for="price">2. 商品原價 (¥)</label>
                     <input type="number" id="price" placeholder="輸入日幣原價">
                 </div>
 
                 <div class="input-group">
-                    <label>2. 利潤設定</label>
-                    <div style="display:flex; gap:15px; margin-bottom:10px;">
-                        <label style="font-weight:normal"><input type="radio" name="feeType" value="percent" checked> 按比例 (%)</label>
-                        <label style="font-weight:normal"><input type="radio" name="feeType" value="fixed"> 固定台幣</label>
+                    <label>3. 利潤</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="feeType" value="percent" checked> 按比例 (%)</label>
+                        <label><input type="radio" name="feeType" value="fixed"> 固定金額 (台幣)</label>
                     </div>
-                    <input type="number" id="serviceFee" placeholder="輸入比例或金額">
+                    <input type="number" id="serviceFee" placeholder="輸入比例或固定金額">
                 </div>
 
                 <div class="input-group">
-                    <label>3. 商品重量 (g)</label>
-                    <input type="number" id="weight" placeholder="克重" oninput="calculateWeightFee()">
-                    <span id="weightFeeDisplay" style="color:var(--brand-primary); font-weight:bold;">= 0 元</span>
+                    <label for="weight">4. 商品重量 (公克 / g)</label>
+                    <div class="weight-display-container">
+                        <input type="number" id="weight" placeholder="商品重量" oninput="calculateWeightFee()">
+                        <span id="weightFeeDisplay" class="weight-fee">= 0 元</span>
+                    </div>
+                    <span class="hint">預估國際運費：克重 × 0.25</span>
                 </div>
 
                 <div class="input-group">
-                    <label>4. 台灣運費 (台幣)</label>
+                    <label for="localShipping">5. 台灣運費 (台幣)</label>
                     <input type="number" id="localShipping" value="60">
                 </div>
 
-                <button class="primary-btn" onclick="calculateTotal()">立即計算總價</button>
+                <button class="primary-btn" onclick="calculateTotal()" id="calcBtn">立即計算總價</button>
             </div>
 
             <div class="result waiting" id="resultBox">
                 <h3>📝 報價明細 (台幣)</h3>
-                <p style="display:flex; justify-content:space-between"><span>商品折合：</span> <span id="resItemPrice">0 元</span></p>
-                <p style="display:flex; justify-content:space-between"><span>國際運費：</span> <span id="resIntlShipping">0 元</span></p>
-                <hr style="border:0; border-top:1px dashed #eee">
-                <p class="total-price" style="display:flex; justify-content:space-between"><span>賣價：</span> <span id="resTotal">0 元</span></p>
+                <p><span>商品折合台幣：</span> <span id="resItemPrice">0 元</span></p>
+                <p><span>利潤：</span> <span id="resServiceFee">0 元</span></p>
+                <p><span>預估國際運費：</span> <span id="resIntlShipping">0 元</span></p>
+                <p><span>台灣國內運費：</span> <span id="resLocalShipping">0 元</span></p>
+                <hr>
+                <p class="cost-price"><span>成本 (商品+雙運費)：</span> <span id="resCost">0 元</span></p>
+                <p class="total-price"><span>賣價：</span> <span id="resTotal">0 元</span></p>
                 
-                <div style="margin-top:25px; border-top:2px dashed #eee; padding-top:20px;">
+                <p style="font-size: 13px; color: #A0A0A0; justify-content: center; margin-top: 15px;">
+                    * 以上報價皆已自動四捨五入至整數
+                </p>
+
+                <div class="save-section">
                     <input type="text" id="quoteName" placeholder="儲存報價名稱">
-                    <button class="save-btn" onclick="saveToSidebar()">💾 直接儲存至歷史紀錄</button>
+                    <button class="save-btn" onclick="saveToSidebar()">💾 儲存至 Nippon Select 日本代購</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        window.onload = () => {
+        window.addEventListener('DOMContentLoaded', () => {
             loadFromStorage();
-            // 恢復側邊欄記憶狀態
-            if (localStorage.getItem('sidebarOpen') === 'true') toggleSidebar(true);
-        };
+        });
 
         function calculateWeightFee() {
             const weight = parseFloat(document.getElementById('weight').value) || 0;
-            document.getElementById('weightFeeDisplay').innerText = '= ' + Math.round(weight * 0.25) + ' 元';
+            const intlShippingTWD = Math.round(weight * 0.25);
+            document.getElementById('weightFeeDisplay').innerText = '= ' + intlShippingTWD + ' 元';
         }
 
         function calculateTotal() {
@@ -166,84 +505,231 @@
             const feeType = document.querySelector('input[name="feeType"]:checked').value;
             const serviceFeeInput = parseFloat(document.getElementById('serviceFee').value) || 0;
             const weight = parseFloat(document.getElementById('weight').value) || 0;
-            const local = parseFloat(document.getElementById('localShipping').value) || 0;
+            const localShipping = parseFloat(document.getElementById('localShipping').value) || 0;
 
-            const itemTWD = Math.round(price * 0.21);
-            const intlTWD = Math.round(weight * 0.25);
-            const serviceTWD = (feeType === 'percent') ? Math.round(itemTWD * (serviceFeeInput / 100)) : serviceFeeInput;
-            const total = itemTWD + intlTWD + local + serviceTWD;
+            let itemPriceTWD = Math.round(price * 0.21);
 
-            document.getElementById('resItemPrice').innerText = itemTWD + ' 元';
-            document.getElementById('resIntlShipping').innerText = intlTWD + ' 元';
-            document.getElementById('resTotal').innerText = total + ' 元';
-            document.getElementById('resultBox').classList.remove('waiting');
+            let serviceFeeTWD = 0;
+            if (feeType === 'percent') {
+                serviceFeeTWD = Math.round(itemPriceTWD * (serviceFeeInput / 100));
+            } else {
+                serviceFeeTWD = serviceFeeInput;
+            }
+
+            const intlShippingTWD = Math.round(weight * 0.25);
+            const costTWD = itemPriceTWD + intlShippingTWD + localShipping;
+            const totalTWD = costTWD + serviceFeeTWD;
+
+            document.getElementById('resItemPrice').innerText = itemPriceTWD + ' 元';
+            document.getElementById('resServiceFee').innerText = serviceFeeTWD + ' 元';
+            document.getElementById('resIntlShipping').innerText = intlShippingTWD + ' 元';
+            document.getElementById('resLocalShipping').innerText = localShipping + ' 元';
+            document.getElementById('resCost').innerText = costTWD + ' 元';
+            document.getElementById('resTotal').innerText = totalTWD + ' 元';
+
+            const resultBox = document.getElementById('resultBox');
+            resultBox.classList.remove('waiting');
+            resultBox.classList.remove('play-refresh');
+            void resultBox.offsetWidth; 
+            resultBox.classList.add('play-refresh');
         }
 
-        function toggleSidebar(forceOpen = false) {
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                if(document.activeElement.id === 'quoteName') {
+                    event.preventDefault();
+                    saveToSidebar();
+                } else if (!document.activeElement.classList.contains('editable-text')) {
+                    event.preventDefault(); 
+                    calculateTotal();
+                }
+            }
+        });
+
+        // ------------------ 側邊欄與儲存功能 ------------------
+
+        let savedItemsCount = 0;
+        let dragSrcEl = null; 
+
+        function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const spacer = document.getElementById('sidebarSpacer');
-            const btn = document.getElementById('historyBtn');
-            const isOpen = forceOpen ? true : sidebar.classList.toggle('open');
+            const historyBtn = document.getElementById('historyBtn');
             
-            if (forceOpen) sidebar.classList.add('open');
-            spacer.classList.toggle('open', isOpen);
-            btn.style.display = isOpen ? 'none' : 'flex';
-            localStorage.setItem('sidebarOpen', isOpen);
-        }
-
-        function saveToSidebar() {
-            const name = document.getElementById('quoteName').value.trim() || "未命名商品";
-            const total = document.getElementById('resTotal').innerText;
-            if (total === '0 元') return; // 防呆：沒計算不儲存
-
-            const id = 'ID_' + Date.now();
-            renderSavedItem(id, `🔴 ${name}`, total);
-            saveData();
-            document.getElementById('quoteName').value = '';
-            if (!document.getElementById('sidebar').classList.contains('open')) toggleSidebar();
-        }
-
-        function renderSavedItem(id, name, total) {
-            const list = document.getElementById('savedList');
-            const item = document.createElement('div');
-            item.className = 'saved-item';
-            item.id = id;
-            item.innerHTML = `
-                <span class="del-btn" onclick="deleteItem('${id}')">✖</span>
-                <div class="editable-text" contenteditable="true" onblur="saveData()" style="font-weight:bold; outline:none">${name}</div>
-                <div style="color:var(--brand-primary); font-weight:bold; margin-top:5px;">賣價：${total}</div>
-            `;
-            list.prepend(item);
-        }
-
-        function deleteItem(id) {
-            // 直接刪除，不跳確認
-            const el = document.getElementById(id);
-            if (el) el.remove();
-            saveData();
-        }
-
-        function saveData() {
-            const items = [];
-            document.querySelectorAll('.saved-item').forEach(el => {
-                items.push({
-                    id: el.id,
-                    name: el.querySelector('.editable-text').innerText,
-                    total: el.querySelector('div[style*="color:var(--brand-primary)"]').innerText.replace('賣價：','')
-                });
-            });
-            localStorage.setItem('nipponSelectQuotes', JSON.stringify(items));
+            sidebar.classList.toggle('open');
+            spacer.classList.toggle('open'); 
+            
+            if (sidebar.classList.contains('open')) {
+                historyBtn.style.display = 'none'; 
+            } else {
+                historyBtn.style.display = 'block'; 
+            }
         }
 
         function loadFromStorage() {
-            const data = JSON.parse(localStorage.getItem('nipponSelectQuotes') || '[]');
-            data.reverse().forEach(q => renderSavedItem(q.id, q.name, q.total));
+            const savedData = localStorage.getItem('nipponSelectQuotes'); 
+            if (savedData) {
+                const quotes = JSON.parse(savedData);
+                quotes.forEach(q => renderSavedItem(q.id, q.name, q.cost, q.total, false));
+                if (quotes.length > 0) {
+                    document.getElementById('emptyMsg').style.display = 'none';
+                    savedItemsCount = quotes.length;
+                }
+            }
         }
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && e.target.id === 'quoteName') saveToSidebar();
-            else if (e.key === 'Enter' && e.target.tagName !== 'DIV') calculateTotal();
-        });
+        function saveOrderToStorage() {
+            const currentItems = document.querySelectorAll('.saved-item');
+            let newQuotes = [];
+            currentItems.forEach(item => {
+                newQuotes.push({
+                    id: item.id,
+                    name: item.querySelector('.quote-name').innerText,
+                    cost: item.querySelector('.quote-cost').innerText,
+                    total: item.querySelector('.quote-total').innerText
+                });
+            });
+            localStorage.setItem('nipponSelectQuotes', JSON.stringify(newQuotes)); 
+        }
+
+        function saveToSidebar() {
+            const nameInput = document.getElementById('quoteName');
+            const quoteName = nameInput.value.trim();
+            const totalText = document.getElementById('resTotal').innerText;
+            const costText = document.getElementById('resCost').innerText;
+
+            if (!quoteName) {
+                alert("請先輸入報價名稱 (例如: 客人A的外套) 喔！");
+                nameInput.focus();
+                return;
+            }
+            if (totalText === '0 元') {
+                alert("請先點擊「立即計算總價」後再儲存！");
+                return;
+            }
+
+            const itemId = 'save_' + Date.now();
+            
+            renderSavedItem(itemId, `🔴 日本代購 - ${quoteName}`, `成本：${costText}`, `賣價：${totalText}`, true);
+
+            document.getElementById('emptyMsg').style.display = 'none';
+            savedItemsCount++;
+            nameInput.value = '';
+
+            saveOrderToStorage();
+
+            const sidebar = document.getElementById('sidebar');
+            if (!sidebar.classList.contains('open')) {
+                toggleSidebar(); 
+            }
+        }
+
+        function renderSavedItem(id, name, cost, total, prepend = false) {
+            const savedList = document.getElementById('savedList');
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'saved-item';
+            itemDiv.draggable = true;
+            itemDiv.id = id;
+
+            itemDiv.innerHTML = `
+                <div class="saved-item-inner">
+                    <div class="drag-handle" title="按住拖曳可排序">☰</div>
+                    <div class="item-content">
+                        <span class="del-btn" onclick="deleteSavedItem('${id}')" title="刪除此筆">✖</span>
+                        <strong class="editable-text quote-name" contenteditable="true" style="color: var(--brand-text); font-size: 16px;" title="點擊即可修改" onblur="saveOrderToStorage()" onkeydown="if(event.key==='Enter'){event.preventDefault(); this.blur();}">${name}</strong>
+                        <span class="editable-text quote-cost" contenteditable="true" style="font-size: 14px; color: #A0A0A0;" title="點擊即可修改" onblur="saveOrderToStorage()" onkeydown="if(event.key==='Enter'){event.preventDefault(); this.blur();}">${cost}</span>
+                        <span class="editable-text quote-total" contenteditable="true" style="font-size: 16px; color: var(--brand-primary); font-weight: bold;" title="點擊即可修改" onblur="saveOrderToStorage()" onkeydown="if(event.key==='Enter'){event.preventDefault(); this.blur();}">${total}</span>
+                    </div>
+                </div>
+            `;
+
+            addDragEvents(itemDiv);
+
+            if (prepend) {
+                savedList.insertBefore(itemDiv, savedList.firstChild);
+            } else {
+                savedList.appendChild(itemDiv);
+            }
+        }
+
+        function deleteSavedItem(id) {
+            // 已移除 confirm 確認視窗
+            document.getElementById(id).remove();
+            savedItemsCount--;
+            if (savedItemsCount === 0) {
+                document.getElementById('emptyMsg').style.display = 'block';
+            }
+            saveOrderToStorage(); 
+        }
+
+        // ------------------ 拖曳排序相關邏輯 (含更絲滑的滑開動畫) ------------------
+
+        function handleDragStart(e) {
+            dragSrcEl = this;
+            e.dataTransfer.effectAllowed = 'move';
+            this.classList.add('dragging');
+        }
+
+        function handleDragOver(e) {
+            if (e.preventDefault) { e.preventDefault(); }
+            e.dataTransfer.dropEffect = 'move';
+            return false;
+        }
+
+        function handleDragEnter(e) {
+            if (this !== dragSrcEl && this.classList.contains('saved-item')) {
+                const list = this.parentNode;
+                const siblings = Array.from(list.querySelectorAll('.saved-item'));
+                const dragIndex = siblings.indexOf(dragSrcEl);
+                const dropIndex = siblings.indexOf(this);
+
+                const rects = siblings.map(c => ({el: c, top: c.getBoundingClientRect().top}));
+
+                if (dragIndex < dropIndex) {
+                    list.insertBefore(dragSrcEl, this.nextSibling);
+                } else {
+                    list.insertBefore(dragSrcEl, this);
+                }
+
+                const newSiblings = Array.from(list.querySelectorAll('.saved-item'));
+                newSiblings.forEach(c => {
+                    const oldTop = rects.find(r => r.el === c)?.top;
+                    const newTop = c.getBoundingClientRect().top;
+                    const deltaY = oldTop - newTop;
+
+                    if (deltaY && deltaY !== 0) {
+                        c.style.transform = `translateY(${deltaY}px)`;
+                        c.style.transition = 'none'; 
+                        
+                        void c.offsetWidth; 
+                        
+                        c.style.transform = 'translateY(0)';
+                        c.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+                    }
+                });
+            }
+        }
+
+        function handleDragLeave(e) { }
+
+        function handleDrop(e) {
+            e.stopPropagation(); 
+            saveOrderToStorage(); 
+            return false;
+        }
+
+        function handleDragEnd(e) {
+            this.classList.remove('dragging');
+        }
+
+        function addDragEvents(item) {
+            item.addEventListener('dragstart', handleDragStart);
+            item.addEventListener('dragenter', handleDragEnter);
+            item.addEventListener('dragover', handleDragOver);
+            item.addEventListener('dragleave', handleDragLeave);
+            item.addEventListener('drop', handleDrop);
+            item.addEventListener('dragend', handleDragEnd);
+        }
     </script>
 </body>
 </html>
