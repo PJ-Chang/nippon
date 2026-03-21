@@ -461,7 +461,11 @@
 
                 <div class="input-group">
                     <label for="localShipping">5. 台灣運費 (台幣)</label>
-                    <input type="number" id="localShipping" value="60">
+                    <select id="localShipping">
+                        <option value="60">7-11 電到店 60</option>
+                        <option value="40">郵局（小）40</option>
+                        <option value="80">郵局（大）80</option>
+                    </select>
                 </div>
 
                 <button class="primary-btn" onclick="calculateTotal()" id="calcBtn">立即計算總價</button>
@@ -653,7 +657,6 @@
         }
 
         function deleteSavedItem(id) {
-            // 已移除 confirm 確認視窗
             document.getElementById(id).remove();
             savedItemsCount--;
             if (savedItemsCount === 0) {
