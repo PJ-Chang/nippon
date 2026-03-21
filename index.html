@@ -198,6 +198,21 @@
             font-size: 12px;
             z-index: 10;
         }
+        
+        /* 👇 新增：複製按鈕樣式 👇 */
+        .saved-item .copy-btn {
+            position: absolute;
+            right: 22px; /* 放在刪除按鈕左邊 */
+            top: -1px;
+            cursor: pointer;
+            color: #888; /* 預設為灰色 */
+            font-size: 13px;
+            z-index: 10;
+            transition: color 0.2s;
+        }
+        .saved-item .copy-btn:hover {
+            color: var(--brand-primary); /* 移過去變紅 */
+        }
 
         /* 直接編輯文字效果 CSS */
         .editable-text {
@@ -401,7 +416,13 @@
             cursor: pointer;
             transition: 0.3s;
         }
-        .save-btn:hover { background-color: #1a1a1a; }
+        .save-btn:hover:not(:disabled) { background-color: #1a1a1a; }
+        
+        .save-btn:disabled {
+            background-color: #E0E0E0;
+            color: #A0A0A0;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
@@ -482,12 +503,12 @@
                 <p class="total-price"><span>賣價：</span> <span id="resTotal">0 元</span></p>
                 
                 <p style="font-size: 13px; color: #A0A0A0; justify-content: center; margin-top: 15px;">
-                    * 以上報價皆已自動四捨五入至整數
+                    * 以上報價皆自動四捨五入至整數
                 </p>
 
                 <div class="save-section">
                     <input type="text" id="quoteName" placeholder="儲存報價名稱">
-                    <button class="save-btn" onclick="saveToSidebar()">💾 儲存至記事本</button>
+                    <button class="save-btn" id="saveBtn" onclick="saveToSidebar()" disabled>💾 儲存至記事本</button>
                 </div>
             </div>
         </div>
@@ -496,6 +517,16 @@
     <script>
         window.addEventListener('DOMContentLoaded', () => {
             loadFromStorage();
+
+            const inputs = document.querySelectorAll('input:not(#quoteName), select');
+            inputs.forEach(input => {
+                input.addEventListener('input', () => {
+                    document.getElementById('saveBtn').disabled = true;
+                });
+                input.addEventListener('change', () => {
+                    document.getElementById('saveBtn').disabled = true;
+                });
+            });
         });
 
         function calculateWeightFee() {
@@ -536,6 +567,8 @@
             resultBox.classList.remove('play-refresh');
             void resultBox.offsetWidth; 
             resultBox.classList.add('play-refresh');
+
+            document.getElementById('saveBtn').disabled = false;
         }
 
         document.addEventListener('keydown', function(event) {
@@ -597,6 +630,11 @@
         }
 
         function saveToSidebar() {
+            if (document.getElementById('saveBtn').disabled) {
+                alert("請先點擊「立即計算總價」更新數值後再儲存");
+                return;
+            }
+
             const nameInput = document.getElementById('quoteName');
             const quoteName = nameInput.value.trim();
             const totalText = document.getElementById('resTotal').innerText;
@@ -614,7 +652,6 @@
 
             const itemId = 'save_' + Date.now();
             
-            // 這裡將原本的 `🔴 日本代購 - ${quoteName}` 改為單純的 quoteName
             renderSavedItem(itemId, quoteName, `成本：${costText}`, `賣價：${totalText}`, true);
 
             document.getElementById('emptyMsg').style.display = 'none';
@@ -627,6 +664,28 @@
             if (!sidebar.classList.contains('open')) {
                 toggleSidebar(); 
             }
+
+            document.getElementById('saveBtn').disabled = true;
+        }
+
+        // 👇 新增：複製功能 JS 👇
+        function copySavedItem(id) {
+            const item = document.getElementById(id);
+            if (!item) return;
+            
+            // 抓取畫面上最新的內容（避免使用者修改後複製到舊的）
+            const name = item.querySelector('.quote-name').innerText;
+            const cost = item.querySelector('.quote-cost').innerText;
+            const total = item.querySelector('.quote-total').innerText;
+            
+            const textToCopy = `${name}\n${cost}\n${total}`;
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                alert('已複製報價！');
+            }).catch(err => {
+                console.error('複製失敗', err);
+                alert('複製失敗，請手動選取複製。');
+            });
         }
 
         function renderSavedItem(id, name, cost, total, prepend = false) {
@@ -636,10 +695,12 @@
             itemDiv.draggable = true;
             itemDiv.id = id;
 
+            // 👇 新增：加入了 <span class="copy-btn"> 👇
             itemDiv.innerHTML = `
                 <div class="saved-item-inner">
                     <div class="drag-handle" title="按住拖曳可排序">☰</div>
                     <div class="item-content">
+                        <span class="copy-btn" onclick="copySavedItem('${id}')" title="複製此筆內容">📄</span>
                         <span class="del-btn" onclick="deleteSavedItem('${id}')" title="刪除此筆">✖</span>
                         <strong class="editable-text quote-name" contenteditable="true" style="color: var(--brand-text); font-size: 16px;" title="點擊即可修改" onblur="saveOrderToStorage()" onkeydown="if(event.key==='Enter'){event.preventDefault(); this.blur();}">${name}</strong>
                         <span class="editable-text quote-cost" contenteditable="true" style="font-size: 14px; color: #A0A0A0;" title="點擊即可修改" onblur="saveOrderToStorage()" onkeydown="if(event.key==='Enter'){event.preventDefault(); this.blur();}">${cost}</span>
