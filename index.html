@@ -417,7 +417,7 @@
             </div>
             
             <p id="emptyMsg" style="color: #A0A0A0; font-size: 14px; text-align: center; margin-top: 30px;">
-                目前尚無紀錄<br>在右側輸入名稱即可儲存。
+                目前尚無紀錄<br>在右側輸入名稱即可儲存
             </p>
             
             <div class="saved-list-container" id="savedList"></div>
@@ -603,12 +603,12 @@
             const costText = document.getElementById('resCost').innerText;
 
             if (!quoteName) {
-                alert("請先輸入報價名稱 (例如: 客人A的外套) 喔！");
+                alert("請先輸入報價名稱");
                 nameInput.focus();
                 return;
             }
             if (totalText === '0 元') {
-                alert("請先點擊「立即計算總價」後再儲存！");
+                alert("請先點擊「立即計算總價」後再儲存");
                 return;
             }
 
