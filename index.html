@@ -462,7 +462,7 @@
                 <div class="input-group">
                     <label for="localShipping">5. 台灣運費 (台幣)</label>
                     <select id="localShipping">
-                        <option value="60">7-11 店到店 60</option>
+                        <option value="60">7-11 電到店 60</option>
                         <option value="40">郵局（小）40</option>
                         <option value="80">郵局（大）80</option>
                     </select>
@@ -474,8 +474,8 @@
             <div class="result waiting" id="resultBox">
                 <h3>📝 報價明細 (台幣)</h3>
                 <p><span>商品折合台幣：</span> <span id="resItemPrice">0 元</span></p>
-                <p><span>預估國際運費：</span> <span id="resIntlShipping">0 元</span></p>
-                <p><span>台灣國內運費：</span> <span id="resLocalShipping">0 元</span></p>
+                <p><span>國際運費：</span> <span id="resIntlShipping">0 元</span></p>
+                <p><span>台灣運費：</span> <span id="resLocalShipping">0 元</span></p>
                 <p><span>利潤：</span> <span id="resServiceFee">0 元</span></p>
                 <hr>
                 <p class="cost-price"><span>成本：</span> <span id="resCost">0 元</span></p>
@@ -614,7 +614,8 @@
 
             const itemId = 'save_' + Date.now();
             
-            renderSavedItem(itemId, `🔴 日本代購 - ${quoteName}`, `成本：${costText}`, `賣價：${totalText}`, true);
+            // 這裡將原本的 `🔴 日本代購 - ${quoteName}` 改為單純的 quoteName
+            renderSavedItem(itemId, quoteName, `成本：${costText}`, `賣價：${totalText}`, true);
 
             document.getElementById('emptyMsg').style.display = 'none';
             savedItemsCount++;
