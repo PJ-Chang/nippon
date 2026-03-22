@@ -26,15 +26,15 @@
             overflow-x: hidden;
         }
 
-        /* 👇 修改：歷史紀錄按鈕：固定位置稍微往右邊跟下面一點 👇 */
+        /* 👇 歷史紀錄按鈕：固定位置稍微往右邊跟下面一點，並加上 padding: 0 防歪斜 👇 */
         .toggle-sidebar-btn {
             position: fixed;
-            left: 28px; /* 原為 20px */
-            top: 28px;  /* 原為 20px */
+            left: 28px; 
+            top: 28px;  
             background-color: var(--brand-primary); 
             color: white;
             border: none;
-            /* padding 用戶已手動移除，維持移除 fix 圖示歪掉 */
+            padding: 0; /* 👈 強制清除手機瀏覽器的預設內距，確保圖示絕對置中 */
             border-radius: 50%; 
             width: 45px;
             height: 45px;
@@ -274,13 +274,13 @@
         h2 { font-size: 22px; }
         h3 { font-size: 18px; }
 
-        /* 👇 新增：手機板主標題防換行優化，確保一行顯示不變兩行 👇 */
+        /* 👇 手機板主標題防換行優化，確保一行顯示不變兩行 👇 */
         @media (max-width: 480px) {
             h2 {
-                font-size: 16px; /* 縮小字體以適應螢幕 */
-                white-space: nowrap; /* 強制不換行 */
-                overflow: visible; /* 確保內容不被裁切 */
-                letter-spacing: 0px; /* 減少字距 */
+                font-size: 16px; 
+                white-space: nowrap; 
+                overflow: visible; 
+                letter-spacing: 0px; 
             }
         }
 
@@ -580,13 +580,13 @@
 
             document.getElementById('saveBtn').disabled = false;
 
-            // 👇 新增：計算後自動平滑滾動到頁面最底部，確保用戶能看到完整報價 👇
+            // 👇 計算後自動平滑滾動到頁面最底部 👇
             setTimeout(() => {
                 window.scrollTo({
-                    top: document.body.scrollHeight, // 滾動到頁面總高度處（即最底部）
-                    behavior: 'smooth' // 使用平滑滾動效果
+                    top: document.body.scrollHeight, 
+                    behavior: 'smooth' 
                 });
-            }, 100); // 稍微延遲 UX 更好
+            }, 100); 
         }
 
         document.addEventListener('keydown', function(event) {
