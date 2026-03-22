@@ -1,10 +1,6 @@
 <!DOCTYPE html>
-<html lang="zh-TW"><head><style id="tag-inspector-styles">
-                    .inspector-hover-outline { outline: 1px dotted #dc3545 !important; box-shadow: inset 0 0 0 1px #dc3545; }
-                    #tag-inspector-tooltip { position: fixed; display: none; background-color: #dc3545; color: white; padding: 2px 6px; font-size: 12px; border-radius: 4px; pointer-events: none; z-index: 9999; font-family: monospace; }
-                </style></head><body contenteditable="true">&lt;
-
-
+<html lang="zh-TW">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nippon Select - 日本代購計算</title>
@@ -20,7 +16,7 @@
         }
 
         body { 
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; /* 更簡約的字體 stack */
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; 
             background-color: var(--brand-bg); 
             display: flex; 
             justify-content: center; 
@@ -36,10 +32,10 @@
             position: fixed;
             left: 20px;
             top: 20px; 
-            background-color: var(--brand-primary); /* 按鈕改為紅色 */
+            background-color: var(--brand-primary); 
             color: white;
-            border: none; 
-            border-radius: 50%; /* 改為圓形按鈕更有日系感 */
+            border: none;
+            border-radius: 50%; 
             width: 45px;
             height: 45px;
             cursor: pointer;
@@ -84,13 +80,13 @@
         /* 👇 左側收合選單：完美貼齊 left: 20px, top: 20px 👇 */
         .sidebar {
             background: #ffffff;
-            border-radius: 12px; /* 稍微圓潤一點，但維持簡約 */
+            border-radius: 12px; 
             box-shadow: var(--box-shadow);
             width: 0; 
             padding: 0;
             opacity: 0;
             overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); /* 絲滑展開動畫 */
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
             box-sizing: border-box;
             white-space: nowrap; 
             display: flex;
@@ -114,7 +110,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 2px dashed #E0E0E0; /* 更淺的虛線 */
+            border-bottom: 2px dashed #E0E0E0; 
             padding-bottom: 25px; 
             margin-bottom: 25px;
             flex-shrink: 0;
@@ -123,17 +119,17 @@
             margin: 0; 
             font-size: 18px; 
             line-height: 1.2;
-            color: var(--brand-text); /* 標題改為深灰，強調文字 */
+            color: var(--brand-text); 
             font-weight: bold;
         }
-        .sidebar-header h3::before { /* 增加一個紅點綴飾 */
+        .sidebar-header h3::before { 
             content: "🔴 ";
             font-size: 12px;
             vertical-align: middle;
         }
         .close-btn {
             cursor: pointer;
-            color: var(--brand-accent); /* ✖ 改為櫻花粉 */
+            color: var(--brand-accent); 
             font-weight: bold;
             font-size: 20px;
             transition: color 0.2s;
@@ -169,14 +165,14 @@
         /* 正在被拖拉的那張卡片 */
         .saved-item.dragging {
             opacity: 0.6;
-            background-color: #fff8f8; /* 拖曳時淡淡的粉 */
+            background-color: #fff8f8; 
             border: 1px dashed var(--brand-primary);
             z-index: 100;
         }
         
         .drag-handle {
             cursor: grab;
-            color: #C0C0C0; /* 更淡的灰色 */
+            color: #C0C0C0; 
             font-size: 18px;
             padding-top: 2px;
             user-select: none;
@@ -197,24 +193,24 @@
             right: 0px;
             top: 0px;
             cursor: pointer;
-            color: var(--brand-primary); /* ✖ 改為日本紅 */
+            color: var(--brand-primary); 
             font-size: 12px;
             z-index: 10;
         }
         
-        /* 👇 新增：複製按鈕樣式 👇 */
+        /* 👇 複製按鈕樣式 👇 */
         .saved-item .copy-btn {
             position: absolute;
-            right: 22px; /* 放在刪除按鈕左邊 */
+            right: 22px; 
             top: -1px;
             cursor: pointer;
-            color: #888; /* 預設為灰色 */
+            color: #888; 
             font-size: 13px;
             z-index: 10;
             transition: color 0.2s;
         }
         .saved-item .copy-btn:hover {
-            color: var(--brand-primary); /* 移過去變紅 */
+            color: var(--brand-primary); 
         }
 
         /* 直接編輯文字效果 CSS */
@@ -227,7 +223,7 @@
             cursor: text;
         }
         .editable-text:hover, .editable-text:focus {
-            background-color: #fff0f0; /* hover 時淡粉色 */
+            background-color: #fff0f0; 
             border-bottom: 1px dashed var(--brand-primary);
         }
         .editable-text:hover::after {
@@ -254,7 +250,7 @@
         .calculator, .result { 
             background: #ffffff; 
             padding: 35px; 
-            border-radius: 12px; /* 簡約圓角 */
+            border-radius: 12px; 
             box-shadow: var(--box-shadow); 
             flex: 1; 
             min-width: 320px; 
@@ -264,10 +260,10 @@
         h2, h3 { 
             text-align: center; 
             margin-top: 0;
-            color: var(--brand-text); /* 改為深灰色 */
+            color: var(--brand-text); 
             letter-spacing: 1px;
         }
-        h2::before, h3::before { /* 增加日系綴飾 */
+        h2::before, h3::before { 
             content: "▫️ ";
             font-size: 14px;
             color: var(--brand-primary);
@@ -288,7 +284,7 @@
             width: 100%; 
             padding: 12px; 
             border: 1px solid #E0E0E0; 
-            border-radius: 6px; /* 簡約圓角 */
+            border-radius: 6px; 
             box-sizing: border-box; 
             font-size: 16px;
             color: var(--brand-text);
@@ -299,7 +295,7 @@
         input:focus, select:focus {
             outline: none;
             border-color: var(--brand-primary);
-            box-shadow: 0 0 0 3px rgba(204, 0, 0, 0.1); /* 紅色 focus 陰影 */
+            box-shadow: 0 0 0 3px rgba(204, 0, 0, 0.1); 
         }
 
         .radio-group { 
@@ -323,7 +319,7 @@
 
         .hint {
             font-size: 12px;
-            color: #A0A0A0; /* 更淡的灰色 */
+            color: #A0A0A0; 
             margin-top: 6px;
             display: block;
         }
@@ -348,13 +344,13 @@
         .result { 
             display: flex; 
             flex-direction: column;
-            border: 2px solid var(--brand-primary); /* 紅色外框突顯結果 */
+            border: 2px solid var(--brand-primary); 
             position: relative;
         }
         .result.waiting {
             opacity: 0.4;
             border-color: #E0E0E0;
-            filter: grayscale(1); /* 灰色狀態 */
+            filter: grayscale(1); 
         }
 
         @keyframes refreshEffect {
@@ -385,7 +381,7 @@
         .total-price {
             font-size: 24px;
             font-weight: bold;
-            color: var(--brand-primary) !important; /* 賣價改為日本紅 */
+            color: var(--brand-primary) !important; 
         }
         .weight-display-container {
             display: flex; 
@@ -393,7 +389,7 @@
             gap: 12px;
         }
         .weight-fee {
-            color: var(--brand-primary); /* 紅色 */
+            color: var(--brand-primary); 
             font-weight: bold; 
             white-space: nowrap; 
             font-size: 16px;
@@ -410,7 +406,7 @@
         .save-btn {
             width: 100%;
             padding: 12px;
-            background-color: var(--brand-text); /* 保留深灰 */
+            background-color: var(--brand-text); 
             color: white;
             border: none;
             border-radius: 6px;
@@ -427,20 +423,20 @@
             cursor: not-allowed;
         }
     </style>
+</head>
+<body>
 
-
-
-    <button class="toggle-sidebar-btn" id="historyBtn" onclick="toggleSidebar()" style="display: block;">☰</button>
+    <button class="toggle-sidebar-btn" id="historyBtn" onclick="toggleSidebar()">☰</button>
 
     <div class="page-layout">
         
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <h3 class="">Nippon Select 日本代購</h3>
+                <h3>Nippon Select 日本代購</h3>
                 <span class="close-btn" onclick="toggleSidebar()">✖</span>
             </div>
             
-            <p id="emptyMsg" style="color: #A0A0A0; font-size: 14px; text-align: center; margin-top: 30px;" class="">
+            <p id="emptyMsg" style="color: #A0A0A0; font-size: 14px; text-align: center; margin-top: 30px;">
                 目前尚無紀錄<br>在右側輸入名稱即可儲存
             </p>
             
@@ -451,41 +447,41 @@
 
         <div class="main-container">
             <div class="calculator">
-                <h2 class=""><font class="" size="4">Nippon Select 日本代購</font></h2>
+                <h2>Nippon Select 日本代購</h2>
 
                 <div class="input-group">
-                    <label for="currency" class="">1. 選擇商品幣別</label>
-                    <select id="currency" class="">
+                    <label for="currency">1. 選擇商品幣別</label>
+                    <select id="currency">
                         <option value="JPY">日幣 ¥ : 日幣原價 × 0.21</option>
                     </select>
                 </div>
 
                 <div class="input-group">
-                    <label id="priceLabel" for="price" class="">2. 商品原價 (¥)</label>
-                    <input type="number" id="price" placeholder="輸入日幣原價" class="">
+                    <label id="priceLabel" for="price">2. 商品原價 (¥)</label>
+                    <input type="number" id="price" placeholder="輸入日幣原價">
                 </div>
 
                 <div class="input-group">
-                    <label class="">3. 利潤</label>
+                    <label>3. 利潤</label>
                     <div class="radio-group">
-                        <label class=""><input type="radio" name="feeType" value="percent" checked=""> 按比例 (%)</label>
-                        <label class=""><input type="radio" name="feeType" value="fixed"> 固定金額 (台幣)</label>
+                        <label><input type="radio" name="feeType" value="percent" checked> 按比例 (%)</label>
+                        <label><input type="radio" name="feeType" value="fixed"> 固定金額 (台幣)</label>
                     </div>
-                    <input type="number" id="serviceFee" placeholder="輸入比例 或 固定金額" class="">
+                    <input type="number" id="serviceFee" placeholder="輸入比例 或 固定金額">
                 </div>
 
                 <div class="input-group">
-                    <label for="weight" class="">4. 商品重量 (公克 / g)</label>
+                    <label for="weight">4. 商品重量 (公克 / g)</label>
                     <div class="weight-display-container">
-                        <input type="number" id="weight" placeholder="商品重量" oninput="calculateWeightFee()" class="">
+                        <input type="number" id="weight" placeholder="商品重量" oninput="calculateWeightFee()">
                         <span id="weightFeeDisplay" class="weight-fee">= 0 元</span>
                     </div>
                     <span class="hint">預估國際運費：克重 × 0.25</span>
                 </div>
 
                 <div class="input-group">
-                    <label for="localShipping" class="">5. 台灣運費 (台幣)</label>
-                    <select id="localShipping" class="">
+                    <label for="localShipping">5. 台灣運費 (台幣)</label>
+                    <select id="localShipping">
                         <option value="60">7-11 店到店 60</option>
                         <option value="40">郵局（小）40</option>
                         <option value="80">郵局（大）80</option>
@@ -495,23 +491,23 @@
                 <button class="primary-btn" onclick="calculateTotal()" id="calcBtn">立即計算總價</button>
             </div>
 
-            <div class="result play-refresh" id="resultBox">
-                <h3 class="">📝 報價明細 (台幣)</h3>
-                <p class=""><span class="">商品折合台幣：</span> <span id="resItemPrice" class="">0 元</span></p>
-                <p class=""><span class="">國際運費：</span> <span id="resIntlShipping" class="">0 元</span></p>
-                <p class=""><span class="">台灣運費：</span> <span id="resLocalShipping">60 元</span></p>
-                <p class=""><span class="">利潤：</span> <span id="resServiceFee" class="">0 元</span></p>
+            <div class="result waiting" id="resultBox">
+                <h3>📝 報價明細 (台幣)</h3>
+                <p><span>商品折合台幣：</span> <span id="resItemPrice">0 元</span></p>
+                <p><span>國際運費：</span> <span id="resIntlShipping">0 元</span></p>
+                <p><span>台灣運費：</span> <span id="resLocalShipping">0 元</span></p>
+                <p><span>利潤：</span> <span id="resServiceFee">0 元</span></p>
                 <hr>
-                <p class="cost-price"><span class="">成本：</span> <span id="resCost" class="">60 元</span></p>
-                <p class="total-price"><span class="">賣價：</span> <span id="resTotal">60 元</span></p>
+                <p class="cost-price"><span>成本：</span> <span id="resCost">0 元</span></p>
+                <p class="total-price"><span>賣價：</span> <span id="resTotal">0 元</span></p>
                 
-                <p style="font-size: 13px; color: #A0A0A0; justify-content: center; margin-top: 15px;" class="">
+                <p style="font-size: 13px; color: #A0A0A0; justify-content: center; margin-top: 15px;">
                     * 以上報價皆自動四捨五入至整數
                 </p>
 
                 <div class="save-section">
-                    <input type="text" id="quoteName" placeholder="儲存報價名稱" class="">
-                    <button class="save-btn" id="saveBtn" onclick="saveToSidebar()">💾 儲存至記事本</button>
+                    <input type="text" id="quoteName" placeholder="儲存報價名稱">
+                    <button class="save-btn" id="saveBtn" onclick="saveToSidebar()" disabled>💾 儲存至記事本</button>
                 </div>
             </div>
         </div>
@@ -671,7 +667,7 @@
             document.getElementById('saveBtn').disabled = true;
         }
 
-        // 👇 新增：複製功能 JS 👇
+        // 👇 複製功能 JS 👇
         function copySavedItem(id) {
             const item = document.getElementById(id);
             if (!item) return;
@@ -698,7 +694,6 @@
             itemDiv.draggable = true;
             itemDiv.id = id;
 
-            // 👇 新增：加入了 <span class="copy-btn"> 👇
             itemDiv.innerHTML = `
                 <div class="saved-item-inner">
                     <div class="drag-handle" title="按住拖曳可排序">☰</div>
@@ -799,5 +794,5 @@
             item.addEventListener('dragend', handleDragEnd);
         }
     </script>
-
-<div id="tag-inspector-tooltip" style="display: none; left: 454px; top: 563px;">div</div></body></html>
+</body>
+</html>
