@@ -1,6 +1,10 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
-<head>
+<html lang="zh-TW"><head><style id="tag-inspector-styles">
+                    .inspector-hover-outline { outline: 1px dotted #dc3545 !important; box-shadow: inset 0 0 0 1px #dc3545; }
+                    #tag-inspector-tooltip { position: fixed; display: none; background-color: #dc3545; color: white; padding: 2px 6px; font-size: 12px; border-radius: 4px; pointer-events: none; z-index: 9999; font-family: monospace; }
+                </style></head><body contenteditable="true">&lt;
+
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nippon Select - 日本代購計算</title>
@@ -424,20 +428,20 @@
             cursor: not-allowed;
         }
     </style>
-</head>
-<body>
 
-    <button class="toggle-sidebar-btn" id="historyBtn" onclick="toggleSidebar()">☰</button>
+
+
+    <button class="toggle-sidebar-btn" id="historyBtn" onclick="toggleSidebar()" style="display: block;">☰</button>
 
     <div class="page-layout">
         
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <h3>Nippon Select 日本代購</h3>
+                <h3 class="">Nippon Select 日本代購</h3>
                 <span class="close-btn" onclick="toggleSidebar()">✖</span>
             </div>
             
-            <p id="emptyMsg" style="color: #A0A0A0; font-size: 14px; text-align: center; margin-top: 30px;">
+            <p id="emptyMsg" style="color: #A0A0A0; font-size: 14px; text-align: center; margin-top: 30px;" class="">
                 目前尚無紀錄<br>在右側輸入名稱即可儲存
             </p>
             
@@ -448,41 +452,41 @@
 
         <div class="main-container">
             <div class="calculator">
-                <h2>Nippon Select 日本代購</h2>
+                <h2 class=""><font class="" size="4">Nippon Select 日本代購</font></h2>
 
                 <div class="input-group">
-                    <label for="currency">1. 選擇商品幣別</label>
-                    <select id="currency">
+                    <label for="currency" class="">1. 選擇商品幣別</label>
+                    <select id="currency" class="">
                         <option value="JPY">日幣 ¥ : 日幣原價 × 0.21</option>
                     </select>
                 </div>
 
                 <div class="input-group">
-                    <label id="priceLabel" for="price">2. 商品原價 (¥)</label>
-                    <input type="number" id="price" placeholder="輸入日幣原價">
+                    <label id="priceLabel" for="price" class="">2. 商品原價 (¥)</label>
+                    <input type="number" id="price" placeholder="輸入日幣原價" class="">
                 </div>
 
                 <div class="input-group">
-                    <label>3. 利潤</label>
+                    <label class="">3. 利潤</label>
                     <div class="radio-group">
-                        <label><input type="radio" name="feeType" value="percent" checked> 按比例 (%)</label>
-                        <label><input type="radio" name="feeType" value="fixed"> 固定金額 (台幣)</label>
+                        <label class=""><input type="radio" name="feeType" value="percent" checked=""> 按比例 (%)</label>
+                        <label class=""><input type="radio" name="feeType" value="fixed"> 固定金額 (台幣)</label>
                     </div>
-                    <input type="number" id="serviceFee" placeholder="輸入比例 或 固定金額">
+                    <input type="number" id="serviceFee" placeholder="輸入比例 或 固定金額" class="">
                 </div>
 
                 <div class="input-group">
-                    <label for="weight">4. 商品重量 (公克 / g)</label>
+                    <label for="weight" class="">4. 商品重量 (公克 / g)</label>
                     <div class="weight-display-container">
-                        <input type="number" id="weight" placeholder="商品重量" oninput="calculateWeightFee()">
+                        <input type="number" id="weight" placeholder="商品重量" oninput="calculateWeightFee()" class="">
                         <span id="weightFeeDisplay" class="weight-fee">= 0 元</span>
                     </div>
                     <span class="hint">預估國際運費：克重 × 0.25</span>
                 </div>
 
                 <div class="input-group">
-                    <label for="localShipping">5. 台灣運費 (台幣)</label>
-                    <select id="localShipping">
+                    <label for="localShipping" class="">5. 台灣運費 (台幣)</label>
+                    <select id="localShipping" class="">
                         <option value="60">7-11 店到店 60</option>
                         <option value="40">郵局（小）40</option>
                         <option value="80">郵局（大）80</option>
@@ -492,23 +496,23 @@
                 <button class="primary-btn" onclick="calculateTotal()" id="calcBtn">立即計算總價</button>
             </div>
 
-            <div class="result waiting" id="resultBox">
-                <h3>📝 報價明細 (台幣)</h3>
-                <p><span>商品折合台幣：</span> <span id="resItemPrice">0 元</span></p>
-                <p><span>國際運費：</span> <span id="resIntlShipping">0 元</span></p>
-                <p><span>台灣運費：</span> <span id="resLocalShipping">0 元</span></p>
-                <p><span>利潤：</span> <span id="resServiceFee">0 元</span></p>
+            <div class="result play-refresh" id="resultBox">
+                <h3 class="">📝 報價明細 (台幣)</h3>
+                <p class=""><span class="">商品折合台幣：</span> <span id="resItemPrice" class="">0 元</span></p>
+                <p class=""><span class="">國際運費：</span> <span id="resIntlShipping" class="">0 元</span></p>
+                <p class=""><span class="">台灣運費：</span> <span id="resLocalShipping">60 元</span></p>
+                <p class=""><span class="">利潤：</span> <span id="resServiceFee" class="">0 元</span></p>
                 <hr>
-                <p class="cost-price"><span>成本：</span> <span id="resCost">0 元</span></p>
-                <p class="total-price"><span>賣價：</span> <span id="resTotal">0 元</span></p>
+                <p class="cost-price"><span class="">成本：</span> <span id="resCost" class="">60 元</span></p>
+                <p class="total-price"><span class="">賣價：</span> <span id="resTotal">60 元</span></p>
                 
-                <p style="font-size: 13px; color: #A0A0A0; justify-content: center; margin-top: 15px;">
+                <p style="font-size: 13px; color: #A0A0A0; justify-content: center; margin-top: 15px;" class="">
                     * 以上報價皆自動四捨五入至整數
                 </p>
 
                 <div class="save-section">
-                    <input type="text" id="quoteName" placeholder="儲存報價名稱">
-                    <button class="save-btn" id="saveBtn" onclick="saveToSidebar()" disabled>💾 儲存至記事本</button>
+                    <input type="text" id="quoteName" placeholder="儲存報價名稱" class="">
+                    <button class="save-btn" id="saveBtn" onclick="saveToSidebar()">💾 儲存至記事本</button>
                 </div>
             </div>
         </div>
@@ -796,5 +800,5 @@
             item.addEventListener('dragend', handleDragEnd);
         }
     </script>
-</body>
-</html>
+
+<div id="tag-inspector-tooltip" style="display: none; left: 454px; top: 563px;">div</div></body></html>
