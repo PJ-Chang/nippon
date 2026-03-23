@@ -92,7 +92,6 @@
             background-size: 16px;
         }
 
-        /* 讓 Placeholder 字體稍微小一點以免在小手機上擠在一起 */
         input::placeholder { font-size: 14px; }
 
         .option-group { display: flex; gap: 15px; margin-bottom: 12px; flex-wrap: wrap; }
@@ -110,6 +109,7 @@
         .inline-calc-container { display: flex; align-items: center; gap: 8px; width: 100%; }
         .inline-calc-result { color: var(--brand-primary); font-weight: bold; white-space: nowrap; font-size: 15px; }
 
+        /* 5. 整合欄位樣式 */
         .ship-flex-row { display: flex; gap: 8px; flex-wrap: nowrap; margin-top: 5px; align-items: flex-start; }
         #localShipBox { flex: 1.1; } 
         #japanShipBox { flex: 1.6; } 
@@ -188,7 +188,7 @@
                     <label class="title-label">5. 台灣 / 日本 國內運費</label>
                     <div class="option-group">
                         <label class="option-label"><input type="checkbox" class="round-checkbox" id="useLocalShip" checked onchange="toggleShipDisplay()"> 台灣運費</label>
-                        <label class="option-label"><input type="checkbox" class="round-checkbox" id="useJapanShip" checked onchange="toggleShipDisplay()"> 日本運費</label>
+                        <label class="option-label"><input type="checkbox" class="round-checkbox" id="useJapanShip" onchange="toggleShipDisplay()"> 日本運費</label>
                     </div>
                     
                     <div class="ship-flex-row">
@@ -200,9 +200,9 @@
                             </select>
                         </div>
                         
-                        <div id="japanShipBox">
+                        <div id="japanShipBox" class="hidden-box">
                             <div class="inline-calc-container">
-                                <input type="number" id="japanShipping" placeholder="日本運費" oninput="calculateJapanPrice()" inputmode="decimal">
+                                <input type="number" id="japanShipping" placeholder="匯率 ×0.21)" oninput="calculateJapanPrice()" inputmode="decimal">
                                 <span id="japanPriceDisplay" class="inline-calc-result">= 0 元</span>
                             </div>
                         </div>
@@ -232,28 +232,34 @@
 
     <script>
         window.addEventListener('DOMContentLoaded', () => {
+            // 讀取儲存的匯率
             const savedRate = localStorage.getItem('nipponSelectRate');
-            if (savedRate) { document.getElementById('currency').value = savedRate; }
+            if (savedRate) { 
+                document.getElementById('currency').value = savedRate; 
+            }
             
             loadFromStorage();
-            updateJapanPlaceholder(); // 初始化 Placeholder
+            updateJapanPlaceholder(); 
             
             const btn = document.getElementById('viewSwitchBtn');
             btn.innerHTML = window.innerWidth <= 900 ? '💻 電腦版' : '📱 手機版';
+            
+            // 初始化運費顯示狀態
             toggleShipDisplay();
         });
 
-        // 👇 更新日本運費輸入框的提示文字 👇
         function updateJapanPlaceholder() {
             const rate = document.getElementById('currency').value;
             const japanInput = document.getElementById('japanShipping');
-            japanInput.placeholder = `匯率 ×${rate}`;
+            japanInput.placeholder = `匯率 ×${rate})`;
         }
 
         function updateAllCurrencyCalcs() {
             const rate = document.getElementById('currency').value;
+            // 儲存匯率到 localStorage
             localStorage.setItem('nipponSelectRate', rate);
-            updateJapanPlaceholder(); // 匯率切換時同步更新
+            
+            updateJapanPlaceholder(); 
             calculateItemPrice();
             calculateJapanPrice();
             document.getElementById('saveBtn').disabled = true;
@@ -291,10 +297,14 @@
             const weight = parseFloat(document.getElementById('weight').value) || 0;
             
             let localShipTWD = 0;
-            if (document.getElementById('useLocalShip').checked) { localShipTWD = parseFloat(document.getElementById('localShipping').value) || 0; }
+            if (document.getElementById('useLocalShip').checked) { 
+                localShipTWD = parseFloat(document.getElementById('localShipping').value) || 0; 
+            }
             
             let japanShipTWD = 0;
-            if (document.getElementById('useJapanShip').checked) { japanShipTWD = Math.round((parseFloat(document.getElementById('japanShipping').value) || 0) * rate); }
+            if (document.getElementById('useJapanShip').checked) { 
+                japanShipTWD = Math.round((parseFloat(document.getElementById('japanShipping').value) || 0) * rate); 
+            }
 
             let itemPriceTWD = Math.round(price * rate);
             let serviceFeeTWD = (feeType === 'percent') ? Math.round(itemPriceTWD * (serviceFeeInput / 100)) : serviceFeeInput;
