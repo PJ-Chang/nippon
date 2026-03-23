@@ -28,7 +28,7 @@
             transition: min-width 0.3s ease;
         }
 
-        /* 👇 右上角：手機版/電腦版切換按鈕 (改為淺灰配色) 👇 */
+        /* 👇 右上角：手機版/電腦版切換按鈕 👇 */
         .view-switch-btn {
             position: fixed;
             right: 20px;
@@ -37,16 +37,16 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: #f5f5f5; /* 淺灰色背景 */
-            color: #666666;            /* 柔和的深灰色文字 */
-            border: 1px solid #dcdcdc; /* 淺灰邊框 */
+            background-color: #f5f5f5; 
+            color: #666666;            
+            border: 1px solid #dcdcdc; 
             padding: 0 16px;
             border-radius: 25px;
             font-size: 14px;
             font-weight: bold;
             cursor: pointer;
             z-index: 1000;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05); /* 陰影放輕 */
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05); 
             transition: all 0.3s ease;
             box-sizing: border-box;
         }
@@ -55,7 +55,6 @@
             border-color: #c0c0c0;
             color: #333333;
         }
-        /* 新增：切換按鈕離開最頂端時的隱藏效果 */
         .view-switch-btn.top-hidden {
             opacity: 0;
             visibility: hidden;
@@ -89,7 +88,6 @@
             background-color: var(--brand-primary-hover);
             transform: translateY(-2px);
         }
-        
         .toggle-sidebar-btn.hidden {
             opacity: 0;
             visibility: hidden;
@@ -159,7 +157,7 @@
             position: fixed; 
             left: 20px;      
             top: 20px;       
-            z-index: 9999; /* ❗將記事本的層級調到最高 ❗*/
+            z-index: 9999; 
             max-height: calc(100vh - 40px); 
         }
         .sidebar.open {
@@ -199,14 +197,12 @@
         }
         .close-btn:hover { color: var(--brand-primary); }
         
-        /* 儲存的清單容器 */
         .saved-list-container {
             flex: 1;
             overflow-y: auto;
             padding-right: 5px; 
         }
         
-        /* 每一筆儲存的報價卡片 */
         .saved-item {
             background: #ffffff;
             border: 1px solid #E0E0E0;
@@ -305,7 +301,7 @@
             flex-wrap: wrap; 
             justify-content: center;
             transition: all 0.3s ease;
-            margin-top: 50px; /* 往下多推一點避免最上方的按鈕擋住標題 */
+            margin-top: 50px; 
         }
         
         .calculator, .result { 
@@ -318,7 +314,6 @@
             box-sizing: border-box;
         }
 
-        /* 強制版面切換 */
         body.force-mobile .main-container {
             flex-direction: column !important;
             flex-wrap: nowrap !important;
@@ -355,20 +350,25 @@
             color: var(--brand-primary);
             vertical-align: middle;
         }
-        h2 { font-size: 22px; }
+        h2 { font-size: 22px; margin-bottom: 25px; } /* 電腦版預設間距 */
         h3 { font-size: 18px; }
 
+        /* 👇 修改：手機版標題上下空白大小一致調整 👇 */
         @media (max-width: 480px) {
+            .calculator {
+                padding: 20px 25px; /* 統一左右留白，並縮小上下 padding */
+            }
             h2 {
-                font-size: 16px; 
+                font-size: 18px; 
+                font-weight: 800; 
                 white-space: nowrap; 
                 overflow: visible; 
                 letter-spacing: 0px; 
+                margin: 0 0 20px 0; /* 強制上下間距對稱，這裡移除預設 Top，用 padding 控制 */
             }
         }
 
         .input-group { margin-bottom: 20px; }
-        
         label { 
             display: block; 
             margin-bottom: 8px; 
@@ -481,7 +481,6 @@
             color: var(--brand-primary) !important; 
         }
 
-        /* 輸入框旁邊顯示即時計算結果的共用容器 */
         .inline-calc-container {
             display: flex; 
             align-items: center; 
@@ -619,15 +618,12 @@
     <script>
         window.addEventListener('DOMContentLoaded', () => {
             loadFromStorage();
-            
-            // 根據螢幕尺寸初始化按鈕文字
             const btn = document.getElementById('viewSwitchBtn');
             if (window.innerWidth <= 900) {
                 btn.innerHTML = '💻 電腦版';
             } else {
                 btn.innerHTML = '📱 手機版';
             }
-
             const inputs = document.querySelectorAll('input:not(#quoteName), select');
             inputs.forEach(input => {
                 input.addEventListener('input', () => {
@@ -643,7 +639,6 @@
             const body = document.body;
             const btn = document.getElementById('viewSwitchBtn');
             const viewport = document.getElementById('viewportMeta');
-            
             if (btn.innerHTML.includes('手機版')) {
                 body.classList.remove('force-desktop');
                 body.classList.add('force-mobile');
@@ -657,25 +652,20 @@
             }
         }
 
-        // 👇 滾動事件：同時處理兩個按鈕的隱藏與顯示 👇
         let lastScrollTop = 0;
         window.addEventListener('scroll', function() {
             const sidebar = document.getElementById('sidebar');
             const historyBtn = document.getElementById('historyBtn');
             const viewSwitchBtn = document.getElementById('viewSwitchBtn');
-            
             let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
-            // 1. 切換版本按鈕：離開最頂端 (大於10px) 即隱藏
             if (scrollTop > 10) {
                 viewSwitchBtn.classList.add('top-hidden');
             } else {
                 viewSwitchBtn.classList.remove('top-hidden');
             }
 
-            // 2. 左上角記事本按鈕：只有手機版在往下滑動時隱藏 (已開啟時不影響)
             if (sidebar.classList.contains('open')) return;
-
             if (window.innerWidth <= 900 && !document.body.classList.contains('force-desktop')) {
                 if (scrollTop > lastScrollTop && scrollTop > 50) {
                     historyBtn.classList.add('scroll-hidden');
@@ -706,14 +696,12 @@
             const localShipping = parseFloat(document.getElementById('localShipping').value) || 0;
 
             let itemPriceTWD = Math.round(price * 0.21);
-
             let serviceFeeTWD = 0;
             if (feeType === 'percent') {
                 serviceFeeTWD = Math.round(itemPriceTWD * (serviceFeeInput / 100));
             } else {
                 serviceFeeTWD = serviceFeeInput;
             }
-
             const intlShippingTWD = Math.round(weight * 0.25);
             const costTWD = itemPriceTWD + intlShippingTWD + localShipping;
             const totalTWD = costTWD + serviceFeeTWD;
@@ -730,14 +718,10 @@
             resultBox.classList.remove('play-refresh');
             void resultBox.offsetWidth; 
             resultBox.classList.add('play-refresh');
-
             document.getElementById('saveBtn').disabled = false;
 
             setTimeout(() => {
-                resultBox.scrollIntoView({
-                    behavior: 'smooth', 
-                    block: 'center' 
-                });
+                resultBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }, 100); 
         }
 
@@ -753,8 +737,6 @@
             }
         });
 
-        // ------------------ 側邊欄與儲存功能 ------------------
-
         let savedItemsCount = 0;
         let dragSrcEl = null; 
 
@@ -762,10 +744,8 @@
             const sidebar = document.getElementById('sidebar');
             const spacer = document.getElementById('sidebarSpacer');
             const historyBtn = document.getElementById('historyBtn');
-            
             sidebar.classList.toggle('open');
             spacer.classList.toggle('open'); 
-            
             if (sidebar.classList.contains('open')) {
                 historyBtn.classList.add('hidden'); 
             } else {
@@ -804,12 +784,10 @@
                 alert("請先點擊「立即計算總價」更新數值後再儲存");
                 return;
             }
-
             const nameInput = document.getElementById('quoteName');
             const quoteName = nameInput.value.trim();
             const totalText = document.getElementById('resTotal').innerText;
             const costText = document.getElementById('resCost').innerText;
-
             if (!quoteName) {
                 alert("請先輸入報價名稱");
                 nameInput.focus();
@@ -819,39 +797,28 @@
                 alert("請先點擊「立即計算總價」後再儲存");
                 return;
             }
-
             const itemId = 'save_' + Date.now();
-            
             renderSavedItem(itemId, quoteName, `成本：${costText}`, `賣價：${totalText}`, true);
-
             document.getElementById('emptyMsg').style.display = 'none';
             savedItemsCount++;
             nameInput.value = '';
-
             saveOrderToStorage();
-
-            const sidebar = document.getElementById('sidebar');
-            if (!sidebar.classList.contains('open')) {
+            if (!document.getElementById('sidebar').classList.contains('open')) {
                 toggleSidebar(); 
             }
-
             document.getElementById('saveBtn').disabled = true;
         }
 
         function copySavedItem(id) {
             const item = document.getElementById(id);
             if (!item) return;
-            
             const name = item.querySelector('.quote-name').innerText;
             const cost = item.querySelector('.quote-cost').innerText;
             const total = item.querySelector('.quote-total').innerText;
-            
             const textToCopy = `${name}\n${cost}\n${total}`;
-            
             navigator.clipboard.writeText(textToCopy).then(() => {
                 alert('已複製報價！');
             }).catch(err => {
-                console.error('複製失敗', err);
                 alert('複製失敗，請手動選取複製。');
             });
         }
@@ -862,22 +829,19 @@
             itemDiv.className = 'saved-item';
             itemDiv.draggable = true;
             itemDiv.id = id;
-
             itemDiv.innerHTML = `
                 <div class="saved-item-inner">
                     <div class="drag-handle" title="按住拖曳可排序">☰</div>
                     <div class="item-content">
                         <span class="copy-btn" onclick="copySavedItem('${id}')" title="複製此筆內容">📄</span>
                         <span class="del-btn" onclick="deleteSavedItem('${id}')" title="刪除此筆">✖</span>
-                        <strong class="editable-text quote-name" contenteditable="true" style="color: var(--brand-text); font-size: 16px;" title="點擊即可修改" onblur="saveOrderToStorage()" onkeydown="if(event.key==='Enter'){event.preventDefault(); this.blur();}">${name}</strong>
-                        <span class="editable-text quote-cost" contenteditable="true" style="font-size: 14px; color: #A0A0A0;" title="點擊即可修改" onblur="saveOrderToStorage()" onkeydown="if(event.key==='Enter'){event.preventDefault(); this.blur();}">${cost}</span>
-                        <span class="editable-text quote-total" contenteditable="true" style="font-size: 16px; color: var(--brand-primary); font-weight: bold;" title="點擊即可修改" onblur="saveOrderToStorage()" onkeydown="if(event.key==='Enter'){event.preventDefault(); this.blur();}">${total}</span>
+                        <strong class="editable-text quote-name" contenteditable="true" style="color: var(--brand-text); font-size: 16px;" onblur="saveOrderToStorage()" onkeydown="if(event.key==='Enter'){event.preventDefault(); this.blur();}">${name}</strong>
+                        <span class="editable-text quote-cost" contenteditable="true" style="font-size: 14px; color: #A0A0A0;" onblur="saveOrderToStorage()" onkeydown="if(event.key==='Enter'){event.preventDefault(); this.blur();}">${cost}</span>
+                        <span class="editable-text quote-total" contenteditable="true" style="font-size: 16px; color: var(--brand-primary); font-weight: bold;" onblur="saveOrderToStorage()" onkeydown="if(event.key==='Enter'){event.preventDefault(); this.blur();}">${total}</span>
                     </div>
                 </div>
             `;
-
             addDragEvents(itemDiv);
-
             if (prepend) {
                 savedList.insertBefore(itemDiv, savedList.firstChild);
             } else {
@@ -894,64 +858,51 @@
             saveOrderToStorage(); 
         }
 
-        // ------------------ 拖曳排序相關邏輯 ------------------
-
         function handleDragStart(e) {
             dragSrcEl = this;
             e.dataTransfer.effectAllowed = 'move';
             this.classList.add('dragging');
         }
-
         function handleDragOver(e) {
             if (e.preventDefault) { e.preventDefault(); }
             e.dataTransfer.dropEffect = 'move';
             return false;
         }
-
         function handleDragEnter(e) {
             if (this !== dragSrcEl && this.classList.contains('saved-item')) {
                 const list = this.parentNode;
                 const siblings = Array.from(list.querySelectorAll('.saved-item'));
                 const dragIndex = siblings.indexOf(dragSrcEl);
                 const dropIndex = siblings.indexOf(this);
-
                 const rects = siblings.map(c => ({el: c, top: c.getBoundingClientRect().top}));
-
                 if (dragIndex < dropIndex) {
                     list.insertBefore(dragSrcEl, this.nextSibling);
                 } else {
                     list.insertBefore(dragSrcEl, this);
                 }
-
                 const newSiblings = Array.from(list.querySelectorAll('.saved-item'));
                 newSiblings.forEach(c => {
                     const oldTop = rects.find(r => r.el === c)?.top;
                     const newTop = c.getBoundingClientRect().top;
                     const deltaY = oldTop - newTop;
-
                     if (deltaY && deltaY !== 0) {
                         c.style.transform = `translateY(${deltaY}px)`;
                         c.style.transition = 'none'; 
-                        
                         void c.offsetWidth; 
-                        
                         c.style.transform = 'translateY(0)';
                         c.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
                     }
                 });
             }
         }
-
         function handleDrop(e) {
             e.stopPropagation(); 
             saveOrderToStorage(); 
             return false;
         }
-
         function handleDragEnd(e) {
             this.classList.remove('dragging');
         }
-
         function addDragEvents(item) {
             item.addEventListener('dragstart', handleDragStart);
             item.addEventListener('dragenter', handleDragEnter);
