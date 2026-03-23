@@ -2,7 +2,8 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> <title>Nippon Select - 日本代購計算</title>
+    <meta id="viewportMeta" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
+    <title>Nippon Select - 日本代購計算</title>
     <style>
         /* 🎨 品牌顏色設定區 (Nippon Select - 日本風) */
         :root {
@@ -24,26 +25,54 @@
             color: var(--brand-text);
             margin: 0;
             overflow-x: hidden;
+            transition: min-width 0.3s ease;
         }
 
-        /* 👇 歷史紀錄按鈕：縮小紅色圓圈，保留三條線大小 👇 */
+        /* 👇 右上角：手機版/電腦版切換按鈕 👇 */
+        .view-switch-btn {
+            position: fixed;
+            right: 20px;
+            top: 20px;        /* 與左邊按鈕一樣的 top */
+            height: 45px;     /* 與左邊按鈕一樣的 height，確保中心點絕對對齊 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #ffffff;
+            color: var(--brand-text);
+            border: 1px solid #E0E0E0;
+            padding: 0 16px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+        .view-switch-btn:hover {
+            background-color: #f5f5f5;
+            border-color: #ccc;
+        }
+
+        /* 👇 左上角：歷史紀錄按鈕 👇 */
         .toggle-sidebar-btn {
             position: fixed;
-            left: 28px; 
-            top: 28px;  
+            left: 20px; 
+            top: 20px;        /* 與右邊按鈕一樣的 top */
+            height: 45px;     /* 與右邊按鈕一樣的 height */
+            width: 45px;  
             background-color: var(--brand-primary); 
             color: white;
             border: none;
             padding: 0; 
             border-radius: 50%; 
-            width: 36px;  /* 從 45px 縮小為 36px */
-            height: 36px; /* 從 45px 縮小為 36px */
             cursor: pointer;
-            font-size: 18px; /* 這裡維持 18px，三條線大小不變 */
+            font-size: 18px;
             font-weight: bold;
             z-index: 1000;
             box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-            transition: opacity 0.3s ease, transform 0.3s ease, background-color 0.3s ease, visibility 0.3s;
+            transition: opacity 0.3s ease, transform 0.3s ease, background-color 0.3s ease, visibility 0.3s, width 0.3s, height 0.3s;
             box-sizing: border-box;
             display: flex;
             align-items: center;
@@ -54,19 +83,31 @@
             transform: translateY(-2px);
         }
         
-        /* 記事本打開時的縮小淡出 */
         .toggle-sidebar-btn.hidden {
             opacity: 0;
             visibility: hidden;
             transform: scale(0.5); 
         }
 
-        /* 手機版往下滑動時，按鈕往上躲藏的動畫 */
+        /* 👇 手機版樣式調整 (確保兩個按鈕縮小後中心點依然對齊) 👇 */
         @media (max-width: 900px) {
             .toggle-sidebar-btn.scroll-hidden {
                 opacity: 0;
                 visibility: hidden;
                 transform: translateY(-100px); 
+            }
+            .toggle-sidebar-btn, .view-switch-btn {
+                top: 15px;      /* 手機版一起微調 top */
+                height: 36px;   /* 手機版一起縮小 height */
+            }
+            .toggle-sidebar-btn {
+                width: 36px;
+                left: 15px;
+            }
+            .view-switch-btn {
+                right: 15px;
+                padding: 0 12px;
+                font-size: 13px;
             }
         }
 
@@ -108,7 +149,6 @@
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
-            
             position: fixed; 
             left: 20px;      
             top: 20px;       
@@ -178,7 +218,6 @@
             transform-origin: center;
         }
         
-        /* 正在被拖拉的那張卡片 */
         .saved-item.dragging {
             opacity: 0.6;
             background-color: #fff8f8; 
@@ -214,7 +253,6 @@
             z-index: 10;
         }
         
-        /* 複製按鈕樣式 */
         .saved-item .copy-btn {
             position: absolute;
             right: 22px; 
@@ -229,7 +267,6 @@
             color: var(--brand-primary); 
         }
 
-        /* 直接編輯文字效果 CSS */
         .editable-text {
             padding: 2px 4px;
             margin: -2px -4px;
@@ -261,6 +298,7 @@
             flex-wrap: wrap; 
             justify-content: center;
             transition: all 0.3s ease;
+            margin-top: 40px; 
         }
         
         .calculator, .result { 
@@ -271,6 +309,32 @@
             flex: 1; 
             min-width: 320px; 
             box-sizing: border-box;
+        }
+
+        /* 強制版面切換 */
+        body.force-mobile .main-container {
+            flex-direction: column !important;
+            flex-wrap: nowrap !important;
+            max-width: 450px !important;
+            margin-top: 40px !important;
+        }
+        body.force-mobile .calculator, body.force-mobile .result {
+            width: 100% !important;
+        }
+        body.force-mobile .sidebar-spacer.open {
+            width: 0 !important;
+        }
+
+        body.force-desktop {
+            min-width: 1000px;
+            overflow-x: auto;
+        }
+        body.force-desktop .main-container {
+            flex-wrap: nowrap !important;
+            max-width: 1000px !important;
+        }
+        body.force-desktop .sidebar-spacer.open {
+            width: 350px !important;
         }
 
         h2, h3 { 
@@ -410,12 +474,14 @@
             font-weight: bold;
             color: var(--brand-primary) !important; 
         }
-        .weight-display-container {
+
+        /* 輸入框旁邊顯示即時計算結果的共用容器 */
+        .inline-calc-container {
             display: flex; 
             align-items: center; 
             gap: 12px;
         }
-        .weight-fee {
+        .inline-calc-result {
             color: var(--brand-primary); 
             font-weight: bold; 
             white-space: nowrap; 
@@ -453,6 +519,8 @@
 </head>
 <body>
 
+    <button class="view-switch-btn" id="viewSwitchBtn" onclick="toggleViewMode()">💻 電腦版</button>
+
     <button class="toggle-sidebar-btn" id="historyBtn" onclick="toggleSidebar()">☰</button>
 
     <div class="page-layout">
@@ -484,8 +552,12 @@
                 </div>
 
                 <div class="input-group">
-                    <label id="priceLabel" for="price">2. 商品原價 (¥)</label>
-                    <input type="number" id="price" placeholder="輸入日幣原價" inputmode="decimal"> </div>
+                    <label for="price">2. 商品原價 (¥)</label>
+                    <div class="inline-calc-container">
+                        <input type="number" id="price" placeholder="輸入日幣原價" oninput="calculateItemPrice()" inputmode="decimal"> 
+                        <span id="itemPriceDisplay" class="inline-calc-result">= 0 元</span>
+                    </div>
+                </div>
 
                 <div class="input-group">
                     <label>3. 利潤</label>
@@ -497,8 +569,9 @@
 
                 <div class="input-group">
                     <label for="weight">4. 商品重量 (公克 / g)</label>
-                    <div class="weight-display-container">
-                        <input type="number" id="weight" placeholder="商品重量" oninput="calculateWeightFee()" inputmode="decimal"> <span id="weightFeeDisplay" class="weight-fee">= 0 元</span>
+                    <div class="inline-calc-container">
+                        <input type="number" id="weight" placeholder="商品重量" oninput="calculateWeightFee()" inputmode="decimal"> 
+                        <span id="weightFeeDisplay" class="inline-calc-result">= 0 元</span>
                     </div>
                     <span class="hint">預估國際運費：克重 × 0.25</span>
                 </div>
@@ -540,6 +613,14 @@
     <script>
         window.addEventListener('DOMContentLoaded', () => {
             loadFromStorage();
+            
+            // 根據螢幕尺寸初始化按鈕文字
+            const btn = document.getElementById('viewSwitchBtn');
+            if (window.innerWidth <= 900) {
+                btn.innerHTML = '💻 電腦版';
+            } else {
+                btn.innerHTML = '📱 手機版';
+            }
 
             const inputs = document.querySelectorAll('input:not(#quoteName), select');
             inputs.forEach(input => {
@@ -552,29 +633,49 @@
             });
         });
 
-        // 手機版滑動時隱藏/顯示按鈕的邏輯
+        function toggleViewMode() {
+            const body = document.body;
+            const btn = document.getElementById('viewSwitchBtn');
+            const viewport = document.getElementById('viewportMeta');
+            
+            if (btn.innerHTML.includes('手機版')) {
+                body.classList.remove('force-desktop');
+                body.classList.add('force-mobile');
+                viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+                btn.innerHTML = '💻 電腦版';
+            } else {
+                body.classList.remove('force-mobile');
+                body.classList.add('force-desktop');
+                viewport.setAttribute('content', 'width=1100'); 
+                btn.innerHTML = '📱 手機版';
+            }
+        }
+
+        // 手機版滑動時隱藏/顯示選單按鈕的邏輯
         let lastScrollTop = 0;
         window.addEventListener('scroll', function() {
             const sidebar = document.getElementById('sidebar');
             const historyBtn = document.getElementById('historyBtn');
             
-            // 如果記事本是打開的狀態，就不做任何事
             if (sidebar.classList.contains('open')) return;
 
-            // 只在手機版 (螢幕寬度 <= 900) 執行
-            if (window.innerWidth <= 900) {
+            if (window.innerWidth <= 900 && !document.body.classList.contains('force-desktop')) {
                 let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
                 
-                // 往下滑動且滾動距離大於 50px 才隱藏
                 if (scrollTop > lastScrollTop && scrollTop > 50) {
                     historyBtn.classList.add('scroll-hidden');
                 } else {
-                    // 往上滑動時顯示
                     historyBtn.classList.remove('scroll-hidden');
                 }
                 lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
             }
         }, { passive: true });
+
+        function calculateItemPrice() {
+            const price = parseFloat(document.getElementById('price').value) || 0;
+            const itemPriceTWD = Math.round(price * 0.21);
+            document.getElementById('itemPriceDisplay').innerText = '= ' + itemPriceTWD + ' 元';
+        }
 
         function calculateWeightFee() {
             const weight = parseFloat(document.getElementById('weight').value) || 0;
@@ -617,7 +718,6 @@
 
             document.getElementById('saveBtn').disabled = false;
 
-            // 👇 改為將「報價明細」精準置中於畫面 👇
             setTimeout(() => {
                 resultBox.scrollIntoView({
                     behavior: 'smooth', 
@@ -651,7 +751,6 @@
             sidebar.classList.toggle('open');
             spacer.classList.toggle('open'); 
             
-            // 使用 class 切換，配合 CSS 讓按鈕隱藏得更自然
             if (sidebar.classList.contains('open')) {
                 historyBtn.classList.add('hidden'); 
             } else {
@@ -724,7 +823,6 @@
             document.getElementById('saveBtn').disabled = true;
         }
 
-        // 複製功能
         function copySavedItem(id) {
             const item = document.getElementById(id);
             if (!item) return;
@@ -829,8 +927,6 @@
             }
         }
 
-        function handleDragLeave(e) { }
-
         function handleDrop(e) {
             e.stopPropagation(); 
             saveOrderToStorage(); 
@@ -845,7 +941,6 @@
             item.addEventListener('dragstart', handleDragStart);
             item.addEventListener('dragenter', handleDragEnter);
             item.addEventListener('dragover', handleDragOver);
-            item.addEventListener('dragleave', handleDragLeave);
             item.addEventListener('drop', handleDrop);
             item.addEventListener('dragend', handleDragEnd);
         }
