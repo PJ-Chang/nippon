@@ -46,14 +46,14 @@
             .view-switch-btn { right: 15px; padding: 0 12px; font-size: 13px; }
         }
 
-        .page-layout { display: flex; width: 100%; max-width: 1200px; justify-content: center; }
+        .page-layout { display: flex; width: 100%; align-items: flex-start; justify-content: center; }
 
         /* 推擠空間 */
         .sidebar-spacer { width: 0; transition: width 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); flex-shrink: 0; }
         .sidebar-spacer.open { width: 370px; }
         @media (max-width: 900px) { .sidebar-spacer.open { width: 0; } }
 
-        /* 👇 採用新版記事本外框樣式 👇 */
+        /* 採用新版記事本外框樣式 */
         .sidebar {
             background: #ffffff;
             border-radius: 20px; 
@@ -72,7 +72,6 @@
         }
         .sidebar.open { opacity: 1; visibility: visible; transform: translateX(0); }
 
-        /* 👇 採用新版標題與虛線樣式 👇 */
         .sidebar-header {
             display: flex;
             justify-content: space-between;
@@ -85,7 +84,10 @@
         
         .saved-list-container { flex: 1; overflow-y: auto; }
 
-        /* 👇 採用新版卡片樣式 (saved-item) 👇 */
+        /* 可編輯文字樣式 */
+        .editable-text { outline: none; padding: 2px 4px; border-radius: 4px; transition: background 0.2s; }
+        .editable-text:focus { background: #f0f0f0; border-bottom: 1px dashed var(--brand-primary); }
+
         .saved-item {
             background: #FCFAFA;
             border: 1px solid #E0D8D0;
@@ -404,7 +406,6 @@
             document.getElementById('saveBtn').disabled = true;
         }
 
-        /* 👇 修改後的渲染與複製功能，結構完全依照你的樣式 👇 */
         function renderSavedItem(id, name, cost, total, prepend) {
             const savedList = document.getElementById('savedList');
             const itemDiv = document.createElement('div');
@@ -417,13 +418,20 @@
                 <div class="item-content">
                     <span class="copy-btn" onclick="copySavedItem('${id}')">📄</span>
                     <span class="del-btn" onclick="deleteSavedItem('${id}')">✖</span>
-                    <strong class="quote-name">${name}</strong>
-                    <span class="quote-cost">${cost}</span>
-                    <span class="quote-total">${total}</span>
+                    <strong class="editable-text quote-name" contenteditable="true" onblur="saveOrderToStorage()" onkeydown="handleEnter(event)">${name}</strong>
+                    <span class="editable-text quote-cost" contenteditable="true" onblur="saveOrderToStorage()" onkeydown="handleEnter(event)">${cost}</span>
+                    <span class="editable-text quote-total" contenteditable="true" onblur="saveOrderToStorage()" onkeydown="handleEnter(event)">${total}</span>
                 </div>
             `;
             addDragEvents(itemDiv);
             if(prepend) savedList.insertBefore(itemDiv, savedList.firstChild); else savedList.appendChild(itemDiv);
+        }
+
+        function handleEnter(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                e.target.blur();
+            }
         }
 
         function deleteSavedItem(id) {
@@ -456,7 +464,7 @@
             if(data.length > 0) document.getElementById('emptyMsg').style.display = 'none';
         }
 
-        // 拖曳排序邏輯 (精簡版)
+        // 拖曳排序邏輯
         let dragSrcEl = null;
         function addDragEvents(item) {
             item.addEventListener('dragstart', function(e) { dragSrcEl = this; e.dataTransfer.effectAllowed = 'move'; this.classList.add('dragging'); });
@@ -478,7 +486,9 @@
         window.onload = loadFromStorage;
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
-                if(document.activeElement.id === 'quoteName') { e.preventDefault(); saveToSidebar(); }
+                const activeEl = document.activeElement;
+                if (activeEl.classList.contains('editable-text')) return; // 編輯狀態不觸發計算
+                if(activeEl.id === 'quoteName') { e.preventDefault(); saveToSidebar(); }
                 else { calculateTotal(); }
             }
         });
