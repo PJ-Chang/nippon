@@ -26,7 +26,7 @@
             overflow-x: hidden;
         }
 
-        /* 👇 歷史紀錄按鈕：固定位置稍微往右邊跟下面一點，並加上 padding: 0 防歪斜 👇 */
+        /* 👇 歷史紀錄按鈕：縮小紅色圓圈，保留三條線大小 👇 */
         .toggle-sidebar-btn {
             position: fixed;
             left: 28px; 
@@ -34,16 +34,16 @@
             background-color: var(--brand-primary); 
             color: white;
             border: none;
-            padding: 0; /* 👈 強制清除手機瀏覽器的預設內距，確保圖示絕對置中 */
+            padding: 0; 
             border-radius: 50%; 
-            width: 45px;
-            height: 45px;
+            width: 36px;  /* 從 45px 縮小為 36px */
+            height: 36px; /* 從 45px 縮小為 36px */
             cursor: pointer;
-            font-size: 18px;
+            font-size: 18px; /* 這裡維持 18px，三條線大小不變 */
             font-weight: bold;
             z-index: 1000;
             box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-            transition: all 0.3s ease;
+            transition: opacity 0.3s ease, transform 0.3s ease, background-color 0.3s ease, visibility 0.3s;
             box-sizing: border-box;
             display: flex;
             align-items: center;
@@ -52,6 +52,22 @@
         .toggle-sidebar-btn:hover {
             background-color: var(--brand-primary-hover);
             transform: translateY(-2px);
+        }
+        
+        /* 記事本打開時的縮小淡出 */
+        .toggle-sidebar-btn.hidden {
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(0.5); 
+        }
+
+        /* 手機版往下滑動時，按鈕往上躲藏的動畫 */
+        @media (max-width: 900px) {
+            .toggle-sidebar-btn.scroll-hidden {
+                opacity: 0;
+                visibility: hidden;
+                transform: translateY(-100px); 
+            }
         }
 
         /* 超級外框 */
@@ -64,10 +80,10 @@
             margin-top: 0; 
         }
 
-        /* 隱形的推擠空間，使用絲滑貝茲曲線 */
+        /* 隱形的推擠空間 */
         .sidebar-spacer {
             width: 0;
-            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: width 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
             flex-shrink: 0;
         }
         .sidebar-spacer.open {
@@ -77,18 +93,19 @@
             .sidebar-spacer.open { width: 0; } 
         }
 
-        /* 👇 左側收合選單：貼齊左上邊角 👇 */
+        /* 左側收合選單 */
         .sidebar {
             background: #ffffff;
             border-radius: 12px; 
             box-shadow: var(--box-shadow);
-            width: 0; 
-            padding: 0;
+            width: 330px;        
+            max-width: 85vw;     
+            padding: 25px;       
             opacity: 0;
-            overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+            visibility: hidden;  
+            transform: translateX(-110%) scale(0.98); 
+            transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); 
             box-sizing: border-box;
-            white-space: nowrap; 
             display: flex;
             flex-direction: column;
             
@@ -96,17 +113,15 @@
             left: 20px;      
             top: 20px;       
             z-index: 999;
+            max-height: calc(100vh - 40px); 
         }
         .sidebar.open {
-            width: 330px; 
-            max-width: 85vw; /* 手機版防破版 */
-            padding: 25px; 
             opacity: 1;
-            max-height: calc(100vh - 40px); 
-            white-space: normal;
+            visibility: visible;
+            transform: translateX(0) scale(1); 
         }
 
-        /* 👇 標題：保留視覺比例，但調整顏色 👇 */
+        /* 標題 */
         .sidebar-header {
             display: flex;
             justify-content: space-between;
@@ -199,7 +214,7 @@
             z-index: 10;
         }
         
-        /* 👇 複製按鈕樣式 👇 */
+        /* 複製按鈕樣式 */
         .saved-item .copy-btn {
             position: absolute;
             right: 22px; 
@@ -270,11 +285,9 @@
             color: var(--brand-primary);
             vertical-align: middle;
         }
-        /* 👇 定義明確的標題大小 👇 */
         h2 { font-size: 22px; }
         h3 { font-size: 18px; }
 
-        /* 👇 手機板主標題防換行優化，確保一行顯示不變兩行 👇 */
         @media (max-width: 480px) {
             h2 {
                 font-size: 16px; 
@@ -539,6 +552,30 @@
             });
         });
 
+        // 手機版滑動時隱藏/顯示按鈕的邏輯
+        let lastScrollTop = 0;
+        window.addEventListener('scroll', function() {
+            const sidebar = document.getElementById('sidebar');
+            const historyBtn = document.getElementById('historyBtn');
+            
+            // 如果記事本是打開的狀態，就不做任何事
+            if (sidebar.classList.contains('open')) return;
+
+            // 只在手機版 (螢幕寬度 <= 900) 執行
+            if (window.innerWidth <= 900) {
+                let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                
+                // 往下滑動且滾動距離大於 50px 才隱藏
+                if (scrollTop > lastScrollTop && scrollTop > 50) {
+                    historyBtn.classList.add('scroll-hidden');
+                } else {
+                    // 往上滑動時顯示
+                    historyBtn.classList.remove('scroll-hidden');
+                }
+                lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
+            }
+        }, { passive: true });
+
         function calculateWeightFee() {
             const weight = parseFloat(document.getElementById('weight').value) || 0;
             const intlShippingTWD = Math.round(weight * 0.25);
@@ -580,11 +617,11 @@
 
             document.getElementById('saveBtn').disabled = false;
 
-            // 👇 計算後自動平滑滾動到頁面最底部 👇
+            // 👇 改為將「報價明細」精準置中於畫面 👇
             setTimeout(() => {
-                window.scrollTo({
-                    top: document.body.scrollHeight, 
-                    behavior: 'smooth' 
+                resultBox.scrollIntoView({
+                    behavior: 'smooth', 
+                    block: 'center' 
                 });
             }, 100); 
         }
@@ -614,10 +651,11 @@
             sidebar.classList.toggle('open');
             spacer.classList.toggle('open'); 
             
+            // 使用 class 切換，配合 CSS 讓按鈕隱藏得更自然
             if (sidebar.classList.contains('open')) {
-                historyBtn.style.display = 'none'; 
+                historyBtn.classList.add('hidden'); 
             } else {
-                historyBtn.style.display = 'block'; 
+                historyBtn.classList.remove('hidden'); 
             }
         }
 
@@ -686,12 +724,11 @@
             document.getElementById('saveBtn').disabled = true;
         }
 
-        // 👇 複製功能 JS 👇
+        // 複製功能
         function copySavedItem(id) {
             const item = document.getElementById(id);
             if (!item) return;
             
-            // 抓取畫面上最新的內容（避免使用者修改後複製到舊的）
             const name = item.querySelector('.quote-name').innerText;
             const cost = item.querySelector('.quote-cost').innerText;
             const total = item.querySelector('.quote-total').innerText;
@@ -744,7 +781,7 @@
             saveOrderToStorage(); 
         }
 
-        // ------------------ 拖曳排序相關邏輯 (含更絲滑的滑開動畫) ------------------
+        // ------------------ 拖曳排序相關邏輯 ------------------
 
         function handleDragStart(e) {
             dragSrcEl = this;
