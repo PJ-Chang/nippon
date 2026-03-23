@@ -75,7 +75,6 @@
 
         .option-label { font-weight: normal; display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 14.5px; color: var(--brand-text); }
 
-        /* 通用樣式 */
         input[type="number"], select, input[type="text"] { 
             width: 100%; padding: 12px; border: 1px solid #E0E0E0; border-radius: 6px; font-size: 16px; box-sizing: border-box; 
             background-color: #fff; height: 46px;
@@ -84,7 +83,6 @@
             appearance: none;
         }
 
-        /* 👇 下拉選單特別調整：字體縮小至 14px 以容納內容，左右間距微調 👇 */
         select#localShipping, select#currency {
             font-size: 14px; 
             padding: 0 30px 0 10px; 
@@ -93,6 +91,9 @@
             background-position: right 8px center;
             background-size: 16px;
         }
+
+        /* 讓 Placeholder 字體稍微小一點以免在小手機上擠在一起 */
+        input::placeholder { font-size: 14px; }
 
         .option-group { display: flex; gap: 15px; margin-bottom: 12px; flex-wrap: wrap; }
         
@@ -184,7 +185,7 @@
                 </div>
 
                 <div class="input-group">
-                    <label class="title-label">5. 台灣 / 日本國內運費</label>
+                    <label class="title-label">5. 台灣 / 日本 國內運費</label>
                     <div class="option-group">
                         <label class="option-label"><input type="checkbox" class="round-checkbox" id="useLocalShip" checked onchange="toggleShipDisplay()"> 台灣運費</label>
                         <label class="option-label"><input type="checkbox" class="round-checkbox" id="useJapanShip" checked onchange="toggleShipDisplay()"> 日本運費</label>
@@ -193,7 +194,7 @@
                     <div class="ship-flex-row">
                         <div id="localShipBox">
                             <select id="localShipping" onchange="document.getElementById('saveBtn').disabled = true;">
-                                <option value="60">7-11店到店 60</option>
+                                <option value="60">7-11 店到店 60</option>
                                 <option value="40">郵局(小) 40</option>
                                 <option value="80">郵局(大) 80</option>
                             </select>
@@ -201,7 +202,7 @@
                         
                         <div id="japanShipBox">
                             <div class="inline-calc-container">
-                                <input type="number" id="japanShipping" placeholder="日幣運費" oninput="calculateJapanPrice()" inputmode="decimal">
+                                <input type="number" id="japanShipping" placeholder="日本運費" oninput="calculateJapanPrice()" inputmode="decimal">
                                 <span id="japanPriceDisplay" class="inline-calc-result">= 0 元</span>
                             </div>
                         </div>
@@ -214,9 +215,9 @@
             <div class="result waiting" id="resultBox">
                 <h3>📝 報價明細 (台幣)</h3>
                 <p><span>商品折合台幣：</span> <span id="resItemPrice">0 元</span></p>
+                <p><span>國際運費：</span> <span id="resIntlShipping">0 元</span></p>
                 <p id="rowJapanShip" class="hidden-box"><span>日本運費：</span> <span id="resJapanShipping">0 元</span></p>
                 <p id="rowLocalShip"><span>台灣運費：</span> <span id="resLocalShipping">0 元</span></p>
-                <p><span>國際運費：</span> <span id="resIntlShipping">0 元</span></p>
                 <p><span>利潤：</span> <span id="resServiceFee">0 元</span></p>
                 <hr>
                 <p class="cost-price"><span>成本：</span> <span id="resCost">0 元</span></p>
@@ -233,15 +234,26 @@
         window.addEventListener('DOMContentLoaded', () => {
             const savedRate = localStorage.getItem('nipponSelectRate');
             if (savedRate) { document.getElementById('currency').value = savedRate; }
+            
             loadFromStorage();
+            updateJapanPlaceholder(); // 初始化 Placeholder
+            
             const btn = document.getElementById('viewSwitchBtn');
             btn.innerHTML = window.innerWidth <= 900 ? '💻 電腦版' : '📱 手機版';
             toggleShipDisplay();
         });
 
+        // 👇 更新日本運費輸入框的提示文字 👇
+        function updateJapanPlaceholder() {
+            const rate = document.getElementById('currency').value;
+            const japanInput = document.getElementById('japanShipping');
+            japanInput.placeholder = `匯率 ×${rate})`;
+        }
+
         function updateAllCurrencyCalcs() {
             const rate = document.getElementById('currency').value;
             localStorage.setItem('nipponSelectRate', rate);
+            updateJapanPlaceholder(); // 匯率切換時同步更新
             calculateItemPrice();
             calculateJapanPrice();
             document.getElementById('saveBtn').disabled = true;
@@ -304,8 +316,6 @@
 
             document.getElementById('resultBox').classList.remove('waiting');
             document.getElementById('saveBtn').disabled = false;
-            
-            // 自動滾動至結果中心
             setTimeout(() => { document.getElementById('resultBox').scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 100);
         }
 
