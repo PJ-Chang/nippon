@@ -28,39 +28,46 @@
             transition: min-width 0.3s ease;
         }
 
-        /* 👇 右上角：手機版/電腦版切換按鈕 👇 */
+        /* 👇 右上角：手機版/電腦版切換按鈕 (改為淺灰配色) 👇 */
         .view-switch-btn {
             position: fixed;
             right: 20px;
-            top: 20px;        /* 與左邊按鈕一樣的 top */
-            height: 45px;     /* 與左邊按鈕一樣的 height，確保中心點絕對對齊 */
+            top: 20px;        
+            height: 45px;     
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: #ffffff;
-            color: var(--brand-text);
-            border: 1px solid #E0E0E0;
+            background-color: #f5f5f5; /* 淺灰色背景 */
+            color: #666666;            /* 柔和的深灰色文字 */
+            border: 1px solid #dcdcdc; /* 淺灰邊框 */
             padding: 0 16px;
             border-radius: 25px;
             font-size: 14px;
             font-weight: bold;
             cursor: pointer;
             z-index: 1000;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05); /* 陰影放輕 */
             transition: all 0.3s ease;
             box-sizing: border-box;
         }
         .view-switch-btn:hover {
-            background-color: #f5f5f5;
-            border-color: #ccc;
+            background-color: #e8e8e8;
+            border-color: #c0c0c0;
+            color: #333333;
+        }
+        /* 新增：切換按鈕離開最頂端時的隱藏效果 */
+        .view-switch-btn.top-hidden {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-50px);
         }
 
         /* 👇 左上角：歷史紀錄按鈕 👇 */
         .toggle-sidebar-btn {
             position: fixed;
             left: 20px; 
-            top: 20px;        /* 與右邊按鈕一樣的 top */
-            height: 45px;     /* 與右邊按鈕一樣的 height */
+            top: 20px;        
+            height: 45px;     
             width: 45px;  
             background-color: var(--brand-primary); 
             color: white;
@@ -89,7 +96,7 @@
             transform: scale(0.5); 
         }
 
-        /* 👇 手機版樣式調整 (確保兩個按鈕縮小後中心點依然對齊) 👇 */
+        /* 👇 手機版樣式調整 👇 */
         @media (max-width: 900px) {
             .toggle-sidebar-btn.scroll-hidden {
                 opacity: 0;
@@ -97,8 +104,8 @@
                 transform: translateY(-100px); 
             }
             .toggle-sidebar-btn, .view-switch-btn {
-                top: 15px;      /* 手機版一起微調 top */
-                height: 36px;   /* 手機版一起縮小 height */
+                top: 15px;      
+                height: 36px;   
             }
             .toggle-sidebar-btn {
                 width: 36px;
@@ -298,7 +305,7 @@
             flex-wrap: wrap; 
             justify-content: center;
             transition: all 0.3s ease;
-            margin-top: 40px; 
+            margin-top: 50px; /* 往下多推一點避免最上方的按鈕擋住標題 */
         }
         
         .calculator, .result { 
@@ -316,7 +323,6 @@
             flex-direction: column !important;
             flex-wrap: nowrap !important;
             max-width: 450px !important;
-            margin-top: 40px !important;
         }
         body.force-mobile .calculator, body.force-mobile .result {
             width: 100% !important;
@@ -651,17 +657,26 @@
             }
         }
 
-        // 手機版滑動時隱藏/顯示選單按鈕的邏輯
+        // 👇 滾動事件：同時處理兩個按鈕的隱藏與顯示 👇
         let lastScrollTop = 0;
         window.addEventListener('scroll', function() {
             const sidebar = document.getElementById('sidebar');
             const historyBtn = document.getElementById('historyBtn');
+            const viewSwitchBtn = document.getElementById('viewSwitchBtn');
             
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+            // 1. 切換版本按鈕：離開最頂端 (大於10px) 即隱藏
+            if (scrollTop > 10) {
+                viewSwitchBtn.classList.add('top-hidden');
+            } else {
+                viewSwitchBtn.classList.remove('top-hidden');
+            }
+
+            // 2. 左上角記事本按鈕：只有手機版在往下滑動時隱藏 (已開啟時不影響)
             if (sidebar.classList.contains('open')) return;
 
             if (window.innerWidth <= 900 && !document.body.classList.contains('force-desktop')) {
-                let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                
                 if (scrollTop > lastScrollTop && scrollTop > 50) {
                     historyBtn.classList.add('scroll-hidden');
                 } else {
