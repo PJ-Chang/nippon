@@ -65,9 +65,16 @@
         h2::before, h3::before { content: "▫️ "; font-size: 14px; color: var(--brand-primary); }
         h2 { font-size: 22px; margin-bottom: 25px; }
 
+        /* 手機版標題優化：強制同一行 + 加粗 */
         @media (max-width: 480px) {
             .calculator { padding: 20px 25px; }
-            h2 { font-size: 18px; font-weight: 800; white-space: nowrap; margin: 0 0 20px 0; }
+            h2 { 
+                font-size: 20px !important; 
+                font-weight: 900 !important; 
+                white-space: nowrap !important; 
+                margin: 0 0 20px 0 !important;
+                letter-spacing: -0.5px;
+            }
         }
 
         .input-group { margin-bottom: 20px; }
@@ -189,7 +196,7 @@
                         
                         <div id="japanShipBox" class="hidden-box">
                             <div class="inline-calc-container">
-                                <input type="number" id="japanShipping" placeholder="匯率 ×0.21)" oninput="calculateJapanPrice()" inputmode="decimal">
+                                <input type="number" id="japanShipping" placeholder="匯率×0.21" oninput="calculateJapanPrice()" inputmode="decimal">
                                 <span id="japanPriceDisplay" class="inline-calc-result">= 0 元</span>
                             </div>
                         </div>
