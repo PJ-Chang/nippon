@@ -21,7 +21,6 @@
             padding: 20px; color: var(--brand-text); margin: 0; overflow-x: hidden;
         }
 
-        /* 頂部按鈕 */
         .view-switch-btn {
             position: fixed; right: 20px; top: 20px; height: 45px;
             display: flex; align-items: center; justify-content: center;
@@ -49,7 +48,6 @@
 
         .page-layout { display: flex; width: 100%; max-width: 1200px; justify-content: center; }
 
-        /* 側邊欄 */
         .sidebar {
             background: #ffffff; border-radius: 12px; box-shadow: var(--box-shadow);
             width: 330px; max-width: 85vw; padding: 25px; opacity: 0; visibility: hidden;
@@ -60,7 +58,6 @@
         .sidebar.open { opacity: 1; visibility: visible; transform: translateX(0); }
         .sidebar-header { display: flex; justify-content: space-between; border-bottom: 2px dashed #E0E0E0; padding-bottom: 20px; margin-bottom: 20px; align-items: center; }
 
-        /* 計算機主體 */
         .main-container { display: flex; gap: 25px; width: 100%; max-width: 900px; flex-wrap: wrap; justify-content: center; margin-top: 50px; }
         .calculator, .result { background: #ffffff; padding: 35px; border-radius: 12px; box-shadow: var(--box-shadow); flex: 1; min-width: 320px; box-sizing: border-box; }
 
@@ -78,7 +75,7 @@
 
         .option-label { font-weight: normal; display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 14.5px; color: var(--brand-text); }
 
-        /* 通用輸入框與下拉選單樣式 */
+        /* 通用樣式 */
         input[type="number"], select, input[type="text"] { 
             width: 100%; padding: 12px; border: 1px solid #E0E0E0; border-radius: 6px; font-size: 16px; box-sizing: border-box; 
             background-color: #fff; height: 46px;
@@ -87,13 +84,14 @@
             appearance: none;
         }
 
-        /* 👇 特別針對台灣運費下拉選單加入右側小箭頭圖示 👇 */
+        /* 👇 下拉選單特別調整：字體縮小至 14px 以容納內容，左右間距微調 👇 */
         select#localShipping, select#currency {
+            font-size: 14px; 
+            padding: 0 30px 0 10px; 
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23888888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
             background-repeat: no-repeat;
-            background-position: right 10px center;
-            background-size: 18px;
-            padding-right: 35px; /* 留空間給箭頭 */
+            background-position: right 8px center;
+            background-size: 16px;
         }
 
         .option-group { display: flex; gap: 15px; margin-bottom: 12px; flex-wrap: wrap; }
@@ -108,13 +106,12 @@
             content: ""; width: 8px; height: 8px; background: #fff; border-radius: 50%; display: block;
         }
 
-        .inline-calc-container { display: flex; align-items: center; gap: 12px; width: 100%; }
-        .inline-calc-result { color: var(--brand-primary); font-weight: bold; white-space: nowrap; font-size: 16px; }
+        .inline-calc-container { display: flex; align-items: center; gap: 8px; width: 100%; }
+        .inline-calc-result { color: var(--brand-primary); font-weight: bold; white-space: nowrap; font-size: 15px; }
 
-        /* 運費整合欄位樣式 */
-        .ship-flex-row { display: flex; gap: 10px; flex-wrap: nowrap; margin-top: 5px; align-items: flex-start; }
-        #localShipBox { flex: 1.2; } 
-        #japanShipBox { flex: 1.5; } 
+        .ship-flex-row { display: flex; gap: 8px; flex-wrap: nowrap; margin-top: 5px; align-items: flex-start; }
+        #localShipBox { flex: 1.1; } 
+        #japanShipBox { flex: 1.6; } 
 
         .primary-btn { width: 100%; padding: 15px; background-color: var(--brand-primary); color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; }
         
@@ -196,9 +193,9 @@
                     <div class="ship-flex-row">
                         <div id="localShipBox">
                             <select id="localShipping" onchange="document.getElementById('saveBtn').disabled = true;">
-                                <option value="60">7-11 店到店 60</option>
-                                <option value="40">郵局（小）40</option>
-                                <option value="80">郵局（大）80</option>
+                                <option value="60">7-11店到店 60</option>
+                                <option value="40">郵局(小) 40</option>
+                                <option value="80">郵局(大) 80</option>
                             </select>
                         </div>
                         
@@ -307,6 +304,8 @@
 
             document.getElementById('resultBox').classList.remove('waiting');
             document.getElementById('saveBtn').disabled = false;
+            
+            // 自動滾動至結果中心
             setTimeout(() => { document.getElementById('resultBox').scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 100);
         }
 
@@ -374,6 +373,7 @@
             if(data.length > 0) document.getElementById('emptyMsg').style.display = 'none';
         }
 
+        window.onload = loadFromStorage;
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 if(document.activeElement.id === 'quoteName') { e.preventDefault(); saveToSidebar(); }
