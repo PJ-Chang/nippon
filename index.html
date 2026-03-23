@@ -72,44 +72,31 @@
 
         .input-group { margin-bottom: 20px; }
         .input-group label.title-label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14.5px; color: var(--brand-text); }
-
         .option-label { font-weight: normal; display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 14.5px; color: var(--brand-text); }
 
         input[type="number"], select, input[type="text"] { 
             width: 100%; padding: 12px; border: 1px solid #E0E0E0; border-radius: 6px; font-size: 16px; box-sizing: border-box; 
-            background-color: #fff; height: 46px;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
+            background-color: #fff; height: 46px; -webkit-appearance: none; appearance: none;
         }
 
         select#localShipping, select#currency {
-            font-size: 14px; 
-            padding: 0 30px 0 10px; 
+            font-size: 14px; padding: 0 30px 0 10px; 
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23888888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 8px center;
-            background-size: 16px;
+            background-repeat: no-repeat; background-position: right 8px center; background-size: 16px;
         }
 
-        input::placeholder { font-size: 14px; }
-
         .option-group { display: flex; gap: 15px; margin-bottom: 12px; flex-wrap: wrap; }
-        
         input[type="radio"], .round-checkbox { 
             width: 18px; height: 18px; accent-color: var(--brand-primary); cursor: pointer; margin: 0; 
             appearance: none; -webkit-appearance: none; border: 1px solid #ccc; border-radius: 50%; outline: none; transition: 0.2s; background: #fff;
             display: inline-flex; align-items: center; justify-content: center;
         }
         input[type="radio"]:checked, .round-checkbox:checked { background: var(--brand-primary); border-color: var(--brand-primary); }
-        input[type="radio"]:checked::after, .round-checkbox:checked::after {
-            content: ""; width: 8px; height: 8px; background: #fff; border-radius: 50%; display: block;
-        }
+        input[type="radio"]:checked::after, .round-checkbox:checked::after { content: ""; width: 8px; height: 8px; background: #fff; border-radius: 50%; display: block; }
 
         .inline-calc-container { display: flex; align-items: center; gap: 8px; width: 100%; }
         .inline-calc-result { color: var(--brand-primary); font-weight: bold; white-space: nowrap; font-size: 15px; }
 
-        /* 5. 整合欄位樣式 */
         .ship-flex-row { display: flex; gap: 8px; flex-wrap: nowrap; margin-top: 5px; align-items: flex-start; }
         #localShipBox { flex: 1.1; } 
         #japanShipBox { flex: 1.6; } 
@@ -232,34 +219,24 @@
 
     <script>
         window.addEventListener('DOMContentLoaded', () => {
-            // 讀取儲存的匯率
             const savedRate = localStorage.getItem('nipponSelectRate');
-            if (savedRate) { 
-                document.getElementById('currency').value = savedRate; 
-            }
-            
+            if (savedRate) { document.getElementById('currency').value = savedRate; }
             loadFromStorage();
-            updateJapanPlaceholder(); 
-            
+            updateJapanPlaceholder();
             const btn = document.getElementById('viewSwitchBtn');
             btn.innerHTML = window.innerWidth <= 900 ? '💻 電腦版' : '📱 手機版';
-            
-            // 初始化運費顯示狀態
             toggleShipDisplay();
         });
 
         function updateJapanPlaceholder() {
             const rate = document.getElementById('currency').value;
-            const japanInput = document.getElementById('japanShipping');
-            japanInput.placeholder = `匯率 ×${rate}`;
+            document.getElementById('japanShipping').placeholder = `匯率×${rate}`;
         }
 
         function updateAllCurrencyCalcs() {
             const rate = document.getElementById('currency').value;
-            // 儲存匯率到 localStorage
             localStorage.setItem('nipponSelectRate', rate);
-            
-            updateJapanPlaceholder(); 
+            updateJapanPlaceholder();
             calculateItemPrice();
             calculateJapanPrice();
             document.getElementById('saveBtn').disabled = true;
@@ -322,7 +299,6 @@
 
             document.getElementById('rowJapanShip').className = japanShipTWD > 0 ? '' : 'hidden-box';
             if(japanShipTWD > 0) document.getElementById('resJapanShipping').innerText = japanShipTWD + ' 元';
-            document.getElementById('rowLocalShip').className = localShipTWD > 0 ? '' : 'hidden-box';
 
             document.getElementById('resultBox').classList.remove('waiting');
             document.getElementById('saveBtn').disabled = false;
