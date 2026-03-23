@@ -48,16 +48,72 @@
 
         .page-layout { display: flex; width: 100%; max-width: 1200px; justify-content: center; }
 
+        /* 推擠空間 */
+        .sidebar-spacer { width: 0; transition: width 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); flex-shrink: 0; }
+        .sidebar-spacer.open { width: 370px; }
+        @media (max-width: 900px) { .sidebar-spacer.open { width: 0; } }
+
+        /* 👇 採用新版記事本外框樣式 👇 */
         .sidebar {
-            background: #ffffff; border-radius: 12px; box-shadow: var(--box-shadow);
-            width: 330px; max-width: 85vw; padding: 25px; opacity: 0; visibility: hidden;
-            transform: translateX(-110%); transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-            position: fixed; left: 20px; top: 20px; z-index: 9999; max-height: calc(100vh - 40px);
-            display: flex; flex-direction: column;
+            background: #ffffff;
+            border-radius: 20px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 350px;
+            max-width: 85vw;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+            opacity: 0; visibility: hidden;
+            transform: translateX(-110%);
+            transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+            position: fixed; left: 20px; top: 20px; z-index: 9999;
+            max-height: calc(100vh - 40px);
         }
         .sidebar.open { opacity: 1; visibility: visible; transform: translateX(0); }
-        .sidebar-header { display: flex; justify-content: space-between; border-bottom: 2px dashed #E0E0E0; padding-bottom: 20px; margin-bottom: 20px; align-items: center; }
 
+        /* 👇 採用新版標題與虛線樣式 👇 */
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px dashed #E0D8D0; 
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+        .sidebar-header h3 { margin: 0; font-size: 18px; color: #4A4036; font-weight: bold; }
+        
+        .saved-list-container { flex: 1; overflow-y: auto; }
+
+        /* 👇 採用新版卡片樣式 (saved-item) 👇 */
+        .saved-item {
+            background: #FCFAFA;
+            border: 1px solid #E0D8D0;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            position: relative;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            box-sizing: border-box;
+            text-align: left;
+        }
+        .saved-item.dragging { opacity: 0.6; border: 1px dashed var(--brand-primary); }
+
+        .item-content { flex: 1; display: flex; flex-direction: column; gap: 0; position: relative; }
+
+        /* 文字樣式設定 */
+        .quote-name { font-size: 18px; color: #4A4036; display: block; margin-bottom: 4px; font-weight: bold; }
+        .quote-cost { font-size: 14px; color: #9A8C7F; display: block; }
+        .quote-total { font-size: 18px; color: var(--brand-primary); font-weight: bold; display: block; margin-top: 5px; }
+
+        /* 圖標設定 */
+        .drag-handle { color: #D5C9BE; cursor: grab; font-size: 20px; user-select: none; }
+        .copy-btn { color: #D5C9BE; position: absolute; right: 30px; top: 0px; cursor: pointer; font-size: 16px; }
+        .del-btn { color: var(--brand-primary); position: absolute; right: 0px; top: 0px; cursor: pointer; font-size: 16px; }
+
+        /* 主要容器 */
         .main-container { display: flex; gap: 25px; width: 100%; max-width: 900px; flex-wrap: wrap; justify-content: center; margin-top: 50px; }
         .calculator, .result { background: #ffffff; padding: 35px; border-radius: 12px; box-shadow: var(--box-shadow); flex: 1; min-width: 320px; box-sizing: border-box; }
 
@@ -65,16 +121,9 @@
         h2::before, h3::before { content: "▫️ "; font-size: 14px; color: var(--brand-primary); }
         h2 { font-size: 22px; margin-bottom: 25px; }
 
-        /* 手機版標題優化：強制同一行 + 加粗 */
         @media (max-width: 480px) {
             .calculator { padding: 20px 25px; }
-            h2 { 
-                font-size: 20px !important; 
-                font-weight: 900 !important; 
-                white-space: nowrap !important; 
-                margin: 0 0 20px 0 !important;
-                letter-spacing: -0.5px;
-            }
+            h2 { font-size: 20px !important; font-weight: 900 !important; white-space: nowrap !important; margin: 0 0 20px 0 !important; letter-spacing: -0.5px; }
         }
 
         .input-group { margin-bottom: 20px; }
@@ -134,11 +183,13 @@
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <h3>Nippon Select 日本代購</h3>
-                <span style="cursor:pointer; font-size: 20px;" onclick="toggleSidebar()">✖</span>
+                <span style="cursor:pointer; font-size: 20px; color: var(--brand-primary);" onclick="toggleSidebar()">✖</span>
             </div>
             <p id="emptyMsg" style="color: #A0A0A0; font-size: 14px; text-align: center; margin-top: 30px;">目前尚無紀錄</p>
             <div class="saved-list-container" id="savedList" style="overflow-y: auto; flex: 1;"></div>
         </div>
+
+        <div class="sidebar-spacer" id="sidebarSpacer"></div>
 
         <div class="main-container">
             <div class="calculator">
@@ -314,6 +365,7 @@
 
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebarSpacer').classList.toggle('open');
             document.getElementById('historyBtn').classList.toggle('hidden');
         }
 
@@ -341,31 +393,59 @@
         function saveToSidebar() {
             const name = document.getElementById('quoteName').value.trim();
             if(!name) return alert("請輸入報價名稱");
+            const cost = document.getElementById('resCost').innerText;
+            const total = document.getElementById('resTotal').innerText;
             const id = 'save_'+Date.now();
-            renderSavedItem(id, name, "成本："+document.getElementById('resCost').innerText, "賣價："+document.getElementById('resTotal').innerText, true);
+            renderSavedItem(id, name, "成本："+cost, "賣價："+total, true);
             document.getElementById('emptyMsg').style.display = 'none';
             document.getElementById('quoteName').value = '';
             saveOrderToStorage();
-            toggleSidebar();
+            if (!document.getElementById('sidebar').classList.contains('open')) toggleSidebar();
             document.getElementById('saveBtn').disabled = true;
         }
 
+        /* 👇 修改後的渲染與複製功能，結構完全依照你的樣式 👇 */
         function renderSavedItem(id, name, cost, total, prepend) {
-            const div = document.createElement('div'); div.className = 'saved-item'; div.id = id;
-            div.innerHTML = `<div class="saved-item-inner" style="padding:15px; border:1px solid #eee; margin-bottom:12px; border-radius:8px; position:relative; background:#fdfdfd">
-                <span style="position:absolute; right:10px; top:10px; cursor:pointer; color:#ccc" onclick="document.getElementById('${id}').remove(); saveOrderToStorage();">✖</span>
-                <strong class="quote-name" style="display:block; margin-bottom:5px;">${name}</strong>
-                <small style="color:#888">${cost}</small><br>
-                <b style="color:var(--brand-primary); font-size:1.1em;">${total}</b>
-            </div>`;
-            const list = document.getElementById('savedList');
-            if(prepend) list.insertBefore(div, list.firstChild); else list.appendChild(div);
+            const savedList = document.getElementById('savedList');
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'saved-item';
+            itemDiv.draggable = true;
+            itemDiv.id = id;
+
+            itemDiv.innerHTML = `
+                <div class="drag-handle">☰</div>
+                <div class="item-content">
+                    <span class="copy-btn" onclick="copySavedItem('${id}')">📄</span>
+                    <span class="del-btn" onclick="deleteSavedItem('${id}')">✖</span>
+                    <strong class="quote-name">${name}</strong>
+                    <span class="quote-cost">${cost}</span>
+                    <span class="quote-total">${total}</span>
+                </div>
+            `;
+            addDragEvents(itemDiv);
+            if(prepend) savedList.insertBefore(itemDiv, savedList.firstChild); else savedList.appendChild(itemDiv);
+        }
+
+        function deleteSavedItem(id) {
+            document.getElementById(id).remove();
+            if (document.querySelectorAll('.saved-item').length === 0) document.getElementById('emptyMsg').style.display = 'block';
+            saveOrderToStorage();
+        }
+
+        function copySavedItem(id) {
+            const item = document.getElementById(id);
+            if (!item) return;
+            const name = item.querySelector('.quote-name').innerText;
+            const cost = item.querySelector('.quote-cost').innerText;
+            const total = item.querySelector('.quote-total').innerText;
+            const textToCopy = `${name}\n${cost}\n${total}`;
+            navigator.clipboard.writeText(textToCopy).then(() => { alert('已複製報價！'); }).catch(() => { alert('複製失敗'); });
         }
 
         function saveOrderToStorage() {
             const items = [];
             document.querySelectorAll('.saved-item').forEach(el => {
-                items.push({ id: el.id, name: el.querySelector('.quote-name').innerText, cost: el.querySelector('small').innerText, total: el.querySelector('b').innerText });
+                items.push({ id: el.id, name: el.querySelector('.quote-name').innerText, cost: el.querySelector('.quote-cost').innerText, total: el.querySelector('.quote-total').innerText });
             });
             localStorage.setItem('nipponSelectQuotes', JSON.stringify(items));
         }
@@ -374,6 +454,25 @@
             const data = JSON.parse(localStorage.getItem('nipponSelectQuotes') || '[]');
             data.forEach(q => renderSavedItem(q.id, q.name, q.cost, q.total, false));
             if(data.length > 0) document.getElementById('emptyMsg').style.display = 'none';
+        }
+
+        // 拖曳排序邏輯 (精簡版)
+        let dragSrcEl = null;
+        function addDragEvents(item) {
+            item.addEventListener('dragstart', function(e) { dragSrcEl = this; e.dataTransfer.effectAllowed = 'move'; this.classList.add('dragging'); });
+            item.addEventListener('dragover', function(e) { if (e.preventDefault) e.preventDefault(); return false; });
+            item.addEventListener('drop', function(e) { 
+                e.stopPropagation(); 
+                if (dragSrcEl !== this) {
+                    const list = this.parentNode;
+                    const nodes = Array.from(list.children);
+                    if (nodes.indexOf(dragSrcEl) < nodes.indexOf(this)) list.insertBefore(dragSrcEl, this.nextSibling);
+                    else list.insertBefore(dragSrcEl, this);
+                    saveOrderToStorage();
+                }
+                return false; 
+            });
+            item.addEventListener('dragend', function() { this.classList.remove('dragging'); });
         }
 
         window.onload = loadFromStorage;
